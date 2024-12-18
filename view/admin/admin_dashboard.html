@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../../styles/admin.css">
+</head>
+<body>
+    <div id="admin-dashboard">
+        <h1>Admin Dashboard</h1>
+        <!-- Tabs -->
+        <nav class="tab-menu">
+            <button class="tab active" data-tab="accounts">Accounts</button>
+            <button class="tab" data-tab="rides">Rides</button>
+            <button class="tab" data-tab="blacklist">Blacklist</button>
+        </nav>
+
+        <!-- Tab Contents -->
+        <section id="accounts" class="tab-content active">
+            <h2>Accounts</h2>
+            <div id="accounts-actions">
+                <button onclick="fetchRegistrationRequests()">Confirm Registrations</button>
+                <button onclick="fetchUsers()">Manage Users</button>
+            </div>
+            <div id="accounts-content"></div>
+        </section>
+
+        <section id="rides" class="tab-content">
+            <h2>Ride Management</h2>
+            <div id="rides-actions">
+                <button onclick="fetchRides()">View Rides</button>
+                <button onclick="addRide()">Add New Ride</button>
+            </div>
+            <div id="rides-content"></div>
+        </section>
+
+        <section id="blacklist" class="tab-content">
+            <h2>Blacklist Management</h2>
+            <div id="blacklist-actions">
+                <button onclick="fetchBlacklistRequests()">View Blacklist Requests</button>
+            </div>
+            <div id="blacklist-content"></div>
+        </section>
+    </div>
+
+    <script src="../../scripts/admin.js"></script>
+</body>
+</html>

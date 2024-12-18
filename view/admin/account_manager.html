@@ -1,0 +1,78 @@
+<!-- account_manager.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoGora - Account Manager</title>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">  
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="logo">
+        <h2><span style="color: #4285F4;">Go</span><span style="color: #FBBC05;">Go</span><span style="color: #FBBC05;">Ra</span></h2>
+      </div>
+      <nav>
+        <ul class="menu">
+          <li><a href="../admin/dashboard.html"><i class="icon">🏠</i> Dashboard</a></li>
+          <li><a href="../admin/ride_manager.html" class="menu-item"><i class="icon">🚖</i> Manage Rides</a></li>
+          <li><a href="../admin/account_manager.html" class="menu-item"><i class="icon">📅</i> Manage Accounts</a></li>
+          <li><a href="../admin/statistics.html" class="menu-item"><i class="icon">📊</i> Statistics</a></li>
+          <li><a href="../admin/blacklist.html" class="menu-item"><i class="icon">🚫</i> Blacklist Passengers</a></li>
+          <li><a href="/index.html" class="menu-item"><i class="icon">🚪</i>Sign Out</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <h1>User Manager</h1>
+      <button onclick="openAddUserModal()">Add User</button>
+      <table id="userTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- List of users will go here -->
+        </tbody>
+      </table>
+    </main>
+  </div>
+  <script>
+    // Fetch users and display them
+    fetch('/api/users')
+      .then(response => response.json())
+      .then(users => {
+        const tableBody = document.querySelector('#userTable tbody');
+        users.forEach(user => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${user.username}</td>
+            <td>${user.email}</td>
+            <td>${user.role}</td>
+            <td>
+              <button onclick="deleteUser(${user.user_id})">Delete</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      });
+
+    function deleteUser(id) {
+      fetch(`/api/users/${id}`, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          location.reload(); // Reload the page to reflect changes
+        });
+    }
+  </script>
+</body>
+</html>
