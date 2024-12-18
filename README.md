@@ -58,6 +58,12 @@ Anyway, sana makapasa na tayo.
 - **Accessing the links**
 - simply enter the domain name with the port e.g. "gomingo:8080"
 - to access the database enter "localhost:8080/phpmyadmin"
-- enjoy have fun !
+
+## Installation and xampp configurations
+- **http.config**
+- modify all require to granted
+
+
+## enjoy have fun !
 
 
