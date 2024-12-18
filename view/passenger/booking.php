@@ -44,6 +44,7 @@
 
             <button type="submit">Search</button>
             <button type="button" onclick="window.location.reload();">Clear Filter</button>
+            <button type="button" onclick="window.location.href='bookHistory.php';">History</button>
         </form>
 
         <h1>Choose a Ride</h1>
