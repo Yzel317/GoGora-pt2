@@ -1,5 +1,5 @@
 <!-- Frontend by: Jekka Hufalar
-    Backend by: Mark Jervin Galarce-->
+    Backend by: Mark Jervin Galarce, Justine Lucas-->
 <?php 
 include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');
 
@@ -73,19 +73,25 @@ $conn->close();
       <div class="right-section">
         <!-- Registration Form -->
         <form class="registration-form" method="POST" autocomplete="off">
-        <h2>Welcome Here in GOraGora</h2>  
-        <div class="input-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" placeholder="Input your username" required>
-        </div>
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter your password" required>
-        </div>
-      <button type="submit" class="register-btn">Login</button>
-      <p class="login-text">Dont have an account? <a href="../passenger/index.php" >Sign Up</a></p>
+    <h2>Welcome Here in GoGora</h2>
+    <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Input your username" required>
+    </div>
+    <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+    </div>
 
-  </form>
+    <!-- Error Message Below Password Input -->
+    <?php if (isset($error)) { ?>
+        <p class="error-message"><?php echo $error; ?></p>
+    <?php } ?>
+
+    <button type="submit" class="register-btn">Login</button>
+    <p class="login-text">Don't have an account? <a href="../passenger/index.php">Sign Up</a></p>
+</form>
+
 
   </body>
 </html>

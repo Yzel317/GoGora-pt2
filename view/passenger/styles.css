@@ -417,3 +417,15 @@ h2 {
     max-width: 70px;
     height: auto;
 }
+/* Error Message Styling */
+.error-messages {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin: 5px 0;
+}
+

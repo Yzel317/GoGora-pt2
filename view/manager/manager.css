@@ -416,3 +416,10 @@ h2 {
     max-width: 70px;
     height: auto;
 }
+
+/* Error Message Styling for Login */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}

@@ -38,6 +38,26 @@ Anyway, sana makapasa na tayo.
 - **Backend**: PHP
 - **Database**: MySQL
 
+## Links Management
+- **A. httpd.conf**
+- change niyo lang yung port to "8080" or the line should be "Listen 8080"
 
+- **B. httpd.vhosts**
+- add the following lines 
+- "<VirtualHost *:8080>
+-    DocumentRoot "C:/xampp/htdocs/GoGora-pt2/view/admin/dashboard.html"           
+-    ServerName gomingo
+- </VirtualHost>" 
+
+- **C. C:/Windows/System32/drivers/etc/hosts**
+- edit with notepad++ , not unless notepad or hosts is already opened via administration 
+- add the following ips in the list
+- "<your ip address> gogora" for the hero passenger and manager access
+- "<your ip address> gomingo" for the admin link
+
+- **Accessing the links**
+- simply enter the domain name with the port e.g. "gomingo:8080"
+- to access the database enter "localhost:8080/phpmyadmin"
+- enjoy have fun !
 
 

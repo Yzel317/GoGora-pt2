@@ -1,41 +1,31 @@
-<!--Author: Justine Lucas-->
 <!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="index.css">
-  <link rel="icon" type="image/png" href="view/assets/favicon.png">
-  <title> GOGORA Hero </title>
+  <link rel="icon" type="image/png" href="../view/admin/assets/logo.png">
+  <title>GOGORA Hero</title>
 </head>
 <body>
-    <div class="hero-image">
-        <video autoplay muted loop playsinline class="background-video">
-            <source src="/view/assets/Baguio.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>        
-        <div class="hero-text">
-            <!-- Logo above the GOGORA text -->
-            <img src="/view/assets/favicon.png" alt="Logo" class="logo">
-            <h1>GOGORA</h1>
-            <p>Arrive at your destination</p>
-            <div class="buttons-container">
-                <button onclick="location.href='/view/passenger/'">Go Go Go Na <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Document</title>
-                </head>
-                <body>
-                    
-                </body>
-                </html></button>
-            </div>
-        </div>
+  <div class="hero-container">
+    <div class="hero-video">
+      <video autoplay muted loop playsinline>
+        <source src="/view/assets/Baguio.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
     </div>
-    <footer class="footer">
-        <a href="/view/admin/dashboard.html" class="footer-link">(c) Gogora Webtech 2024</a>
-    </footer>
-    
+    <div class="hero-content">
+      <div class="hero-text">
+        <img src="../view/assets/logo.png" alt="Logo" class="logo">
+        <h1>GoGora</h1>
+        <p>Your journey, our pride!</p>
+        <div class="buttons-container">
+          <button onclick="location.href='/view/passenger/'">Go na! Sakay Na!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer"><a>(c) Gogora Webtech 2024</a></footer>
 </body>
 </html>
