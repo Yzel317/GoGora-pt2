@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "csv-writer": "^1.6.0",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "name": "gogora-pt2",
+  "description": "GoGora is a web application designed for managing and reserving rides, primarily targeting passengers, managers, and administrators.\r This system allows users to view available rides, reserve seats, manage schedules, and handle payments. \r The application provides functionalities tailored to each user role, enhancing the overall ride experience.\r Anyway, sana makapasa na tayo.",
+  "version": "1.0.0",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
