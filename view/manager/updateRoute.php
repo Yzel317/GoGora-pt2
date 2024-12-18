@@ -1,5 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/GoGora/control/includes/db.php');  // Include database connection
+include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');  // Include database connection
 
 // Enable error reporting for debugging
 ini_set('display_errors', 1);

@@ -1,5 +1,5 @@
 <?php
-     include($_SERVER['DOCUMENT_ROOT'] . '/GoGora/control/includes/db.php');  // Include database connection
+     include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');  // Include database connection
 
    // Fetch rides from the database
    $sql = "SELECT plate_number, ride_type, route, CONCAT(DATE_FORMAT(time, '%h:%i %p'), ' to ', DATE_FORMAT(departure, '%h:%i %p')) as schedule, seats_available FROM rides";

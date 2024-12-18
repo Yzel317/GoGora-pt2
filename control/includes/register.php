@@ -49,7 +49,7 @@ $stmt->bind_param("sssssss", $firstName, $lastName, $email, $username, $hashedPa
 
 if ($stmt->execute()) {
     // Redirect to login form after successful registration
-    header("Location: ../../view/manager/manage.php");
+    header("Location: /view/manager/manage.php");
     exit(); // Stop further execution
 } else {
     echo "Error: " . $stmt->error;

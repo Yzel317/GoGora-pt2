@@ -1,10 +1,4 @@
 // Switch between forms (register and login)
-document.getElementById('show-login-form').addEventListener('click', function (event) {
-    event.preventDefault();
-    document.getElementById('registration-form').style.display = 'none';
-    document.getElementById('login-form').style.display = 'block';
-});
-
 document.getElementById('show-register-form').addEventListener('click', function (event) {
     event.preventDefault();
     document.getElementById('login-form').style.display = 'none';

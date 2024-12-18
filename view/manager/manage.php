@@ -1,7 +1,7 @@
 <!-- Frontend by: Jekka Hufalar
-     Backend by: Mark Jervin Galarce-->
+    Backend by: Mark Jervin Galarce-->
 <?php 
-include('../../control/includes/db.php');
+include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');
 
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
@@ -29,12 +29,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['user_type'] = $user['user_type'];
 
         // Redirect based on role
-        if ($user['role'] == 'Student') {
-            header("Location: ../../view/passenger/booking.php");
-        } else if ($user['role'] == 'Faculty') {
-            header("Location: ../../view/manager/dashboard.php");
+        if ($user['role'] == 'Student'|| $user['role'] == 'Faculty'|| $user['role'] == 'Employee') {
+            header("Location: /view/passenger/booking.php");
+        } else if ($user['role'] == 'Manager') {
+            header("Location: /view/manager/dashboard.php");
         } else if ($user['role'] == 'Admin') {
-            header("Location: ../../view/admin/.php");
+            header("Location: /view/admin/.php");
         }
         exit();
     } else {
@@ -58,18 +58,14 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoGora</title>
-    <link rel="icon" type="image/png" href="../admin/assets/assets/favicon.png">
+    <link rel="icon" type="image/png" href="/view/assets/favicon.png">
     <link rel="stylesheet" href="manager.css">
   </head>
   <body>
-  <!-- <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-    <?php if (isset($error)) { ?>
-        <div class="error"><?php echo $error; ?></div>
-    <?php } ?> -->
     <div class="container">
       <div class="left-section">
         <div class="promo-content">
-          <img src="../admin/assets/assets/logo.png" alt="GoGora Logo" class="promo-logo">
+          <img src="/view/assets/logo.png" alt="GoGora Logo" class="promo-logo">
           <h1 class="promo-title">GoGora</h1>
           <p class="promo-subtitle">Your journey, our pride!</p>
         </div>
@@ -80,11 +76,11 @@ $conn->close();
         <h2>Welcome Here in GOraGora</h2>  
         <div class="input-group">
           <label for="username">Username</label>
-          <input type="text" id="username" name="username" placeholder="Choose a username" required>
+          <input type="text" id="username" name="username" placeholder="Input your username" required>
         </div>
         <div class="input-group">
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter a password" required>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
         </div>
       <button type="submit" class="register-btn">Login</button>
       <p class="login-text">Dont have an account? <a href="../passenger/index.php" >Sign Up</a></p>

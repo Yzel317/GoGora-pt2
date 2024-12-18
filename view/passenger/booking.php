@@ -6,15 +6,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoGora Booking</title>
-    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="icon" type="image/png" href="/view/assets/favicon.png">
     <link rel="stylesheet" href="style2.css">
 </head>
 <body id="book-bod">
     <header class="book-head">
         <h1>GoGora</h1>
-        <a href="#"><img src="assets/profile.png" alt="Profile"></a>
+        <a href="#"><img src="/view/assets/profile.png" alt="Profile"></a>
         <div class="logout-link">
-            <a href="includes/index.php"><img src="assets/logout.png"></a>
+            <a href="/view/manager/manage.php"><img src="/view/assets/logout.png"></a>
         </div>
     </header>
 

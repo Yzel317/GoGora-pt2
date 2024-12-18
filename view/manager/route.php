@@ -1,5 +1,5 @@
 <!-- <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/GoGora/control/includes/db.php');  // Include database connection
+include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');  // Include database connection
 
 // Handle delete request for rides
 if (isset($_GET['delete_ride'])) {

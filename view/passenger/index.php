@@ -13,14 +13,14 @@
     <div class="container">
       <div class="left-section">
         <div class="promo-content">
-          <img src="assets/logo.png" alt="GoGora Logo" class="promo-logo">
+          <img src="/view/assets/logo.png" alt="GoGora Logo" class="promo-logo">
           <h1 class="promo-title">GoGora</h1>
           <p class="promo-subtitle">Your journey, our pride!</p>
         </div>
       </div>
       <div class="right-section">
       <!-- This is the registration form of the web application -->
-        <form id="registration-form" method="POST" action="../../control/includes/register.php">
+        <form id="registration-form" method="POST" action="/control/includes/register.php">
     <h2>Get Started Today</h2>
     <div class="input-group name-group">
         <div class="first-name">
@@ -61,14 +61,14 @@
         </select>
     </div>
     <button type="submit" class="register-btn">Register</button>
-    <p class="login-text">Already a member? <a href="#" id="show-login-form">Log in</a></p>
+    <p class="login-text">Already a member? <a href="../manager/manage.php">Log in</a></p>
 </form>
 
     <!-- This is the login form of the web application -->
-<div class="form-container" id="login-form" style="display: none;">
-  <h2>Welcome Back</h2>
+<!-- <div class="form-container" id="login-form" style="display: none;">
+  <h2>Welcome Back</h2> -->
   <!-- Login Form -->
-  <form id="login-form-element" method="POST" action="../../control/includes/login.php">
+  <!-- <form id="login-form-element" method="POST" action="/control/includes/login.php">
     <div class="input-group">
       <label for="login-username">Username</label>
       <input type="text" id="login-username" name="username" placeholder="Enter your username" required>
@@ -80,7 +80,7 @@
     <button type="submit" class="register-btn" id="login-btn">Log In</button>
   </form>
   <p class="login-text">Don't have an account? <a href="#" id="show-register-form">Sign Up</a></p>
-</div>
+</div> -->
   <!-- This is the form for the avatar upload  of the web application -->
         <!-- Photo Upload Form -->
         <!-- <div class="form-container" id="upload-photo-form" style="display: none;">

@@ -1,5 +1,5 @@
 <!-- <?php
-   include ('../GoGora-main/control/includes.php');
+   include ('/control/includes/db.php');
   
    ?> -->
    

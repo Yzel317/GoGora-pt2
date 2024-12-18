@@ -1,5 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/GoGora/control/includes/db.php'); // Include database connection
+include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php'); // Include database connection
 
 // Fetch all priority users
 $priorityUsersQuery = "SELECT firstname, lastname, username, role, user_type FROM users WHERE user_type = 'Priority'";

@@ -27,7 +27,7 @@
                 <li><a href="../manager/reservations.php"><span class="icon">📝</span> Reservations</a></li>
             </ul>
             <div class="logout">
-                <a href="#">Logout</a>
+                <a href="/view/manager/manage.php">Logout</a>
             </div>
         </div>
         <div class="content">

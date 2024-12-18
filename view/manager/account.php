@@ -1,5 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/GoGora/control/includes/db.php');
+include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');
 
 // Handle delete request for users
 if (isset($_GET['delete_user'])) {
