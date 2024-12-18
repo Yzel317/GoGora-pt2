@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoGora - Booking History</title>
+    <title>GoGora - Booking Logs</title>
     <link rel="icon" type="image/png" href="/view/assets/favicon.png">
     <link rel="stylesheet" href="style2.css">
 </head>
@@ -46,9 +46,9 @@
             <button type="button" onclick="window.history.back();">Back</button>
         </form>
 
-        <h1>Ride History</h1>
+        <h1>Booking Logs</h1>
         <section class="ride-list" id="rideListContainer">
-            <p>Loading booking history...</p>
+            <p>Loading booking logs...</p>
         </section>
     </div>
 </body>

@@ -18,6 +18,11 @@
         </div>
     </header>
 
+    <div class="button-container">
+        <button type="button" onclick="window.location.href='bookLogs.php';" class="top-button">Bookings</button>
+        <button type="button" onclick="window.location.href='bookHistory.php';" class="top-button">History</button>
+    </div>
+
     <div class="book-cont">
         <form id="filterForm">
             <label for="route">Search Route:</label>
@@ -44,7 +49,6 @@
 
             <button type="submit">Search</button>
             <button type="button" onclick="window.location.reload();">Clear Filter</button>
-            <button type="button" onclick="window.location.href='bookHistory.php';">History</button>
         </form>
 
         <h1>Choose a Ride</h1>
