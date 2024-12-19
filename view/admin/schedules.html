@@ -7,7 +7,9 @@
   <title>GoGora - Schedule Management</title>
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="script.js" defer></script>
   <style>
     /* Button alignment */
@@ -76,9 +78,28 @@
         <div class="title-section">
           <h2>Schedules</h2>
           <form id="addScheduleForm">
+            <!--  
             <input type="text" id="scheduleRoute" placeholder="Route" required>
             <input type="datetime-local" id="scheduleTime" required>
-            <button type="button" onclick="addSchedule()">Add Schedule</button>
+            -->
+            <button type="button" id="addNewScheduleBtn">Add New Schedule</button>
+          </form>
+        </div>
+
+        <div id="addScheduleUI" style="display: none;">
+          <h3>Add a New Schedule</h3>
+          <form id="addScheduleForm">
+
+            <label for="scheduleRoute">Route:</label>
+            <input type="text" id="scheduleRoute" placeholder="Route" required>
+
+            <label for="scheduleDeparture">Departure:</label>
+            <input type="text" id="scheduleDeparture" class="scheduleDate" placeholder="Departure" required>
+
+            <label for="scheduleSeats">Seats:</label>
+            <input type="text" id="scheduleSeats" placeholder="Seats" required>
+        
+            <button type="submit" id="addScheduleBtn">Add Schedule</button>
           </form>
         </div>
 
@@ -87,9 +108,10 @@
         <table id = "schedulesTable">
           <tr>
             <th>ID</th>
+            <th>Route</th>
             <th>Departure</th>
+            <th>Seats Available</th>
           </tr>
-          <tr><th>Time</th></tr>
         </table>
       </div>
 
@@ -108,6 +130,7 @@
   </div>
 
   <script>
+
     async function fetchSchedules() {
       const response = await fetch('/api/schedule');
       const schedules = await response.json();
@@ -116,11 +139,61 @@
       schedulesTable.innerHTML = schedules.map(schedule => `
         <tr class="schedule-item" data-schedule-id="${schedule.ride_id}">
           <td>${schedule.ride_id}</td>
-          <td>${schedule.time}</td>
+          <td>${schedule.route}</td>
           <td>${schedule.departure}</td>
+          <td>${schedule.seats_available}</td>
         </tr>
       `).join('');
     }
+
+
+  async function addSchedule(event) {
+  event.preventDefault(); // Prevent page reload on form submission
+
+  const route = document.getElementById('scheduleRoute').value;
+  const departure = document.getElementById('scheduleDeparture').value;
+  const seatsAvailable = document.getElementById('scheduleSeats').value;
+
+  try {
+    const response = await fetch('/api/schedule', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ route, departure, seats_available: seatsAvailable }),
+    });
+
+    // Check if the response is JSON
+    const responseData = await response.json();
+
+    if (response.ok) {
+      alert('Schedule added successfully!');
+      document.getElementById('addScheduleForm').reset(); // Clear the form
+      fetchSchedules(); // Reload the schedules
+    } else {
+      alert(`Error adding schedule: ${responseData.error}`);
+    }
+  } catch (error) {
+    console.error('Error adding schedule:', error);
+    alert('Failed to add schedule.');
+  }
+}
+
+// Bind event listener to the add schedule button
+document.getElementById('addScheduleBtn').addEventListener('click', addSchedule);
+
+
+document.getElementById('addScheduleForm').addEventListener('click', () => {
+  const addScheduleUI = document.getElementById('addScheduleUI');
+    addScheduleUI.style.display = addScheduleUI.style.display === 'none' ? 'block' : 'none';
+});
+
+flatpickr('#scheduleDeparture', {
+    enableTime: true,         // Enables time selection
+    dateFormat: 'Y-m-d H:i',  // Sets date-time format (e.g., 2024-12-20 08:00)
+    minDate: 'today',         // Prevents selecting past dates
+});
+    
 /*
     async function addSchedule() {
       const scheduleData = {
