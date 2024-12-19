@@ -3,8 +3,9 @@ const path = require('path');
 const app = express();
 
 // Routes
-const ridesRouter = require('./view/admin/api/rides');  // Ensure the path is correct
+const ridesRouter = require('./view/admin/api/rides'); 
 const scheduleRouter = require('./view/admin/api/schedule');
+const usersRouter = require('./view/admin/api/users');
 
 // Middleware
 app.use(express.json());
@@ -22,9 +23,8 @@ app.use('/model/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes setup
 app.use('/api/rides', ridesRouter);
-
-// schedule setup
 app.use('/api/schedule', scheduleRouter);
+app.use('/api/users', usersRouter);
 
 // Default route for catching any unhandled requests
 app.use((req, res) => {

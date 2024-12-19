@@ -1,5 +1,4 @@
-<!--Authors:John Gabriel Pampo, Justine Lucas-->>
-<!-- account_manager.html -->
+<!--Authors:John Gabriel Pampo, Justine Lucas, Chryzel Beray-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +8,8 @@
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">  
-  <script src="script.js" defer></script>
+  <script src="/api/users.js" defer></script>
+  <script src="/api/account_mngr.js" defer></script>
 </head>
 <body>
   <div class="dashboard">
@@ -20,58 +20,130 @@
       <nav>
         <ul class="menu">
           <li><a href="index.html" class="menu-item"><i class="icon">🏠</i> Dashboard</a></li>
-          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a>
-          <li><a href="account_manager.html" class="menu-item"><i class="icon">👥</i> Manage Accounts</a></li>
+          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a></li>
+          <li><a href="account_manager.html" class="menu-item active"><i class="icon">👥</i> Manage Accounts</a></li>
           <li><a href="statistics.html" class="menu-item"><i class="icon">📊</i> Statistics</a></li>
           <li><a href="blacklist.html" class="menu-item"><i class="icon">🚫</i> Blacklist Passengers</a></li>
         </ul>
       </nav>
     </aside>
     <main class="main-content">
-      <h1>User Manager</h1>
-      <button onclick="openAddUserModal()">Add User</button>
-      <table id="userTable">
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- List of users will go here -->
-        </tbody>
-      </table>
+      <div class="title-section">
+        <h1>Manage Accounts</h1>
+      </div>
+      <div class="search-filters">
+        <input type="text" id="searchInput" placeholder="Search Name" oninput="filterUsers()">
+        <select id="filterRole">
+          <option value="">Filter by Role</option>
+        </select>
+        <select id="filterUserType">
+          <option value="">Filter by User Type</option>
+        </select>
+        <button onclick="applyFilters()">Apply</button>
+        <button onclick="clearFilters()">Clear All</button>
+      </div>
+      <div class="table-wrapper rides-section">
+        <div class="title-section">
+          <h2>User Accounts</h2>
+          <button class="add-schedule" onclick="openAddUserModal()">+ Add User</button>
+        </div>
+        <table id="userTable">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Password</th>
+              <th>Avatar</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+      </div>
     </main>
   </div>
-  <script>
-    // Fetch users and display them
-    fetch('/api/users')
-      .then(response => response.json())
-      .then(users => {
-        const tableBody = document.querySelector('#userTable tbody');
-        users.forEach(user => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${user.username}</td>
-            <td>${user.email}</td>
-            <td>${user.role}</td>
-            <td>
-              <button onclick="deleteUser(${user.user_id})">Delete</button>
-            </td>
-          `;
-          tableBody.appendChild(row);
-        });
-      });
 
-    function deleteUser(id) {
-      fetch(`/api/users/${id}`, { method: 'DELETE' })
-        .then(response => response.json())
-        .then(data => {
-          alert(data.message);
-          location.reload(); // Reload the page to reflect changes
-        });
+  <!-- Add User Modal -->
+  <div id="addUserModal" class="modal" style=
+  "display: none;">
+    <div class="modal-content">
+      <h2>Add User</h2>
+      <form id="addUserForm" onsubmit="addUser(event)">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required>
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+        <div class="button-group">
+        <label for="role">Role:</label>
+        <select id="role" name="role" required>
+          <option value="Admin">Admin</option>
+          <option value="Manager">Manager</option>
+          <option value="Student">Student</option>
+          <option value="Faculty">Faculty</option>
+          <option value="Employee">Employee</option>
+        </select>
+        <div class="button-group">
+          <button type="submit" id="addUserButton">Add User</button>
+          <button type="button" id="closeModalButton" onclick="closeAddUserModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update User Modal -->
+  <div id="updateUserModal" class="modal">
+    <div class="modal-content">
+      <h2>Update User</h2>
+      <form id="updateUserForm" onsubmit="updateUser(event)">
+        <input type="hidden" id="updateUserId">
+        <label for="updateUsername">Username:</label>
+        <input type="text" id="updateUsername" name="username" required>
+        <label for="updateFirstName">First Name:</label>
+        <input type="text" id="updateFirstName" name="firstName" required>
+        <label for="updateLastName">Last Name:</label>
+        <input type="text" id="updateLastName" name="lastName" required>
+        <label for="updateEmail">Email:</label>
+        <input type="email" id="updateEmail" name="email" required>
+        <label for="updateRole">Role:</label>
+        <select id="updateRole" name="role" required>
+          <option value="Admin">Admin</option>
+          <option value="Manager">Manager</option>
+          <option value="Student">Student</option>
+          <option value="Faculty">Faculty</option>
+          <option value="Employee">Employee</option>
+        </select>
+        <div class="button-group">
+          <button type="submit" id="updateUserButton">Update User</button>
+          <button type="button" id="closeUpdateModalButton" onclick="closeUpdateUserModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    // Filter users based on search input
+    function filterUsers() {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const filteredUsers = allUsers.filter(user => {
+        return (
+          user.user_id.toString().includes(searchInput) ||
+          user.firstname.toLowerCase().includes(searchInput) ||
+          user.lastname.toLowerCase().includes(searchInput)
+        );
+      });
+      loadUsers(filteredUsers);
     }
   </script>
 </body>
