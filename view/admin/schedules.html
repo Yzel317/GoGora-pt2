@@ -1,0 +1,164 @@
+<!--Authors: John Gabriel Pampo, Justine Lucas-->>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoGora - Schedule Management</title>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
+  <script src="script.js" defer></script>
+  <style>
+    /* Button alignment */
+    .title-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rides-section, .schedules-section {
+      margin-top: 20px;
+    }
+
+    .ride-item, .schedule-item {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="logo">
+        <h2><span style="color: #4285F4;">Go</span><span style="color: #FBBC05;">Go</span><span style="color: #FBBC05;">Ra</span></h2>
+      </div>
+      <nav>
+        <ul class="menu">
+          <li><a href="index.html" class="menu-item"><i class="icon">🏠</i> Dashboard</a></li>
+          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a></li>
+          <li><a href="account_manager.html" class="menu-item"><i class="icon">👥</i> Manage Accounts</a></li>
+          <li><a href="statistics.html" class="menu-item"><i class="icon">📊</i> Statistics</a></li>
+          <li><a href="blacklist.html" class="menu-item"><i class="icon">🚫</i> Blacklist Passengers</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <header>
+        <h1>Manage Schedules</h1>
+      </header>
+
+      <div class="schedules-section">
+        <!-- Add Schedule Form -->
+        <div class="title-section">
+          <h2>Schedules</h2>
+          <form id="addScheduleForm">
+            <input type="text" id="scheduleRoute" placeholder="Route" required>
+            <input type="datetime-local" id="scheduleTime" required>
+            <button type="button" onclick="addSchedule()">Add Schedule</button>
+          </form>
+        </div>
+
+        <!-- Schedule List -->
+        <div id="schedulesTable"></div>
+      </div>
+
+      <!-- Edit Schedule Modal -->
+      <div id="editScheduleModal" style="display: none;">
+        <h3>Edit Schedule</h3>
+        <form id="editScheduleForm">
+          <input type="text" id="editScheduleRoute" placeholder="Route" required>
+          <input type="datetime-local" id="editScheduleTime" required>
+          <button type="button" id="updateScheduleButton">Update Schedule</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    async function fetchSchedules() {
+      const response = await fetch('/api/schedules');
+      const schedules = await response.json();
+      const schedulesTable = document.getElementById('schedulesTable');
+      schedulesTable.innerHTML = schedules.map(schedule => `
+        <div class="schedule-item">
+          <span>${schedule.route} - ${schedule.time}</span>
+          <div>
+            <button onclick="editSchedule(${schedule.schedule_id})">Edit</button>
+            <button onclick="deleteSchedule(${schedule.schedule_id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function addSchedule() {
+      const scheduleData = {
+        route: document.getElementById('scheduleRoute').value,
+        time: document.getElementById('scheduleTime').value,
+      };
+
+      const response = await fetch('/api/schedules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(scheduleData),
+      });
+
+      if (response.ok) {
+        alert('Schedule added!');
+        fetchSchedules();
+      } else {
+        alert('Failed to add schedule');
+      }
+    }
+
+    async function editSchedule(id) {
+      const response = await fetch(`/api/schedules/${id}`);
+      const schedule = await response.json();
+
+      document.getElementById('editScheduleRoute').value = schedule.route;
+      document.getElementById('editScheduleTime').value = schedule.time;
+
+      document.getElementById('updateScheduleButton').onclick = async () => {
+        const updatedSchedule = {
+          route: document.getElementById('editScheduleRoute').value,
+          time: document.getElementById('editScheduleTime').value,
+        };
+
+        const updateResponse = await fetch(`/api/schedules/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedSchedule),
+        });
+
+        if (updateResponse.ok) {
+          alert('Schedule updated!');
+          fetchSchedules();
+        } else {
+          alert('Failed to update schedule');
+        }
+      };
+    }
+
+    async function deleteSchedule(id) {
+      if (!confirm('Are you sure?')) return;
+
+      const response = await fetch(`/api/schedules/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert('Schedule deleted!');
+        fetchSchedules();
+      } else {
+        alert('Failed to delete schedule');
+      }
+    }
+
+    // Fetch schedules on page load
+    fetchSchedules();
+  </script>
+</body>
+</html>

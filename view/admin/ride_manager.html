@@ -1,5 +1,4 @@
 <!--Authors: John Gabriel Pampo, Justine Lucas-->>
-<!-- ride_manager.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +7,28 @@
   <title>GoGora - Ride Management</title>
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">  
-  <script src="script.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
+  <script src="/routes/script.js"></script>
+  <style>
+    /* Button alignment */
+    .title-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rides-section, .schedules-section {
+      margin-top: 20px;
+    }
+
+    .ride-item, .schedule-item {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+  </style>
 </head>
 <body>
   <div class="dashboard">
@@ -20,124 +39,84 @@
       <nav>
         <ul class="menu">
           <li><a href="index.html" class="menu-item"><i class="icon">🏠</i> Dashboard</a></li>
-          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🚖</i> Manage Rides</a></li>
-          <li><a href="account_manager.html" class="menu-item"><i class="icon">📅</i> Manage Accounts</a></li>
+          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a></li>
+          <li><a href="account_manager.html" class="menu-item"><i class="icon">👥</i> Manage Accounts</a></li>
           <li><a href="statistics.html" class="menu-item"><i class="icon">📊</i> Statistics</a></li>
           <li><a href="blacklist.html" class="menu-item"><i class="icon">🚫</i> Blacklist Passengers</a></li>
         </ul>
       </nav>
     </aside>
     <main class="main-content">
-      <h1>Manage Rides</h1>
+      <!-- Rides Section -->
+      <div class="title-section">
+        <h1>Manage Rides</h1>
+        <button class="add-ride" onclick="location.href='ride.html'">Edit Rides</button>
+      </div>
       <div class="rides-section">
         <h2>Rides</h2>
-        <button class="add-ride">Add Ride</button>
-        <div class="ride-item">
-          <span>Ride A</span>
-          <div>
-            <button class="edit-ride">Edit</button>
-            <button class="delete-ride">Delete</button>
-          </div>
+        <div id="rides-container">
+          <!-- Ride items will be dynamically loaded here -->
         </div>
-        <div class="ride-item">
-          <span>${ride.plate_number}</span>
-          <img src="/uploads/${ride.image}" alt="Ride Image" width="100">
-          <div>
-            <button class="edit-ride">Edit</button>
-            <button class="delete-ride">Delete</button>
-          </div>
-        </div>        
+      </div>
+      <!-- Schedules Section -->
+      <div class="title-section">
+        <h1>Manage Schedules</h1>
+        <button class="add-schedule" onclick="location.href='schedules.html'">Edit Schedules</button>
       </div>
       <div class="schedules-section">
         <h2>Schedules</h2>
-        <button class="add-schedule">Add Schedule</button>
-        <div class="schedule-item">
-          <span>8:00 AM</span>
-          <div>
-            <button class="edit-schedule">Edit</button>
-            <button class="delete-schedule">Delete</button>
-          </div>
-        </div>
-        <div class="schedule-item">
-          <span>9:00 AM</span>
-          <div>
-            <button class="edit-schedule">Edit</button>
-            <button class="delete-schedule">Delete</button>
-          </div>
+        <div id="schedules-container">
+
         </div>
       </div>
     </main>
   </div>
-  <div id="addRideModal" class="modal">
-    <div class="modal-content">
-      <h2>ADD A RIDE</h2>
-      <label for="plateNumber">Plate Number</label>
-      <input type="text" id="plateNumber" placeholder="Value">
-      <label for="typeOfRide">Type of Ride</label>
-      <select id="typeOfRide">
-        <option value="jeepney">Jeepney</option>
-        <option value="service">Service</option>
-      </select>
-      <label for="seatingCapacity">Seating Capacity</label>
-      <input type="number" id="seatingCapacity" placeholder="Value">
-      <label for="route">Route</label>
-      <input type="text" id="route" placeholder="Value">
-      <label for="schedule">Schedule</label>
-      <input type="text" id="schedule" placeholder="Value">
-      <label for="rideImage">Ride Image</label>
-      <input type="file" id="rideImage" name="image" accept="image/*">
-
-      <div class="button-group">
-        <button id="addRideButton">ADD RIDE</button>
-        <button id="closeModalButton">BACK</button>
-      </div>
-    </div>
-  </div>
   <script>
-  const addRideForm = document.getElementById('addRideForm'); // Assume your form has this ID
+    // Fetch and display data for rides and schedules
+    async function fetchData() {
+      try {
+        // Fetch ride data
+        const ridesResponse = await fetch('/api/rides'); // Replace with your server endpoint
+        const rides = await ridesResponse.json();
+        const ridesContainer = document.getElementById('rides-container');
+        ridesContainer.innerHTML = '';
+        rides.forEach(ride => {
+          const rideItem = document.createElement('div');
+          rideItem.className = 'ride-item';
+          rideItem.innerHTML = `
+            <p>Ride ID: ${ride.ride_id}</p>
+            <p>Plate Number: ${ride.plate_number}</p>
+            <p>Driver: ${ride.driver || 'N/A'}</p>
+            <p>Route: ${ride.route}</p>
+            <p>Departure: ${new Date(ride.departure).toLocaleString()}</p>
+            <p>Seats Available: ${ride.seats_available}</p>
+          `;
+          ridesContainer.appendChild(rideItem);
+        });
 
-  addRideForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    // Get form values
-    const plateNumber = document.getElementById('plateNumber').value;
-    const typeOfRide = document.getElementById('typeOfRide').value;
-    const seatingCapacity = document.getElementById('seatingCapacity').value;
-    const route = document.getElementById('route').value;
-    const schedule = document.getElementById('schedule').value;
-
-    // Prepare the data object
-    const rideData = {
-      plate_number: plateNumber,
-      type_of_ride: typeOfRide,
-      seating_capacity: seatingCapacity,
-      route: route,
-      schedule: schedule
-    };
-
-    try {
-      const response = await fetch('/routes/rides', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(rideData),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert('Ride added successfully!');
-        location.reload(); // Refresh the page or update the table
-      } else {
-        alert(`Failed to add ride: ${result.error}`);
+        // Fetch schedule data
+        const schedulesResponse = await fetch('/api/schedules'); // Replace with your server endpoint
+        const schedules = await schedulesResponse.json();
+        const schedulesContainer = document.getElementById('schedules-container');
+        schedulesContainer.innerHTML = '';
+        schedules.forEach(schedule => {
+          const scheduleItem = document.createElement('div');
+          scheduleItem.className = 'schedule-item';
+          scheduleItem.innerHTML = `
+            <p>Schedule ID: ${schedule.schedule_id}</p>
+            <p>Ride ID: ${schedule.ride_id}</p>
+            <p>Date: ${new Date(schedule.date).toLocaleDateString()}</p>
+            <p>Time: ${new Date(schedule.date).toLocaleTimeString()}</p>
+          `;
+          schedulesContainer.appendChild(scheduleItem);
+        });
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
-    } catch (error) {
-      console.error('Error adding ride:', error);
-      alert('An error occurred while adding the ride.');
     }
-  });
-</script>
 
+    // Fetch data on page load
+    fetchData();
+  </script>
 </body>
 </html>

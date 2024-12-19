@@ -1,0 +1,149 @@
+<!--Authors: John Gabriel Pampo, Justine Lucas-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoGora - Ride Management</title>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">  
+  <script src="routes/script.js" defer></script>
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="logo">
+        <h2><span style="color: #4285F4;">Go</span><span style="color: #FBBC05;">Go</span><span style="color: #FBBC05;">Ra</span></h2>
+      </div>
+      <nav>
+        <ul class="menu">
+          <li><a href="index.html" class="menu-item"><i class="icon">🏠</i> Dashboard</a></li>
+          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a>
+            <a href="ride.html" class="menu-item" style="padding-left: 45px;"><i class="icon">🚖</i> Rides</a>
+            <a href="schedules.html" class="menu-item" style="padding-left: 45px;"><i class="icon">📅</i> Schedules</a>   
+          </li> 
+          <li><a href="account_manager.html" class="menu-item"><i class="icon">👥</i> Manage Accounts</a></li>
+          <li><a href="statistics.html" class="menu-item"><i class="icon">📊</i> Statistics</a></li>
+          <li><a href="blacklist.html" class="menu-item"><i class="icon">🚫</i> Blacklist Passengers</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <h1>Manage Rides</h1>
+      <div class="rides-section">
+        <div class="title-section">
+          <h2>Rides</h2>
+          <div class="header-actions">
+            <button class="add-ride">Add Ride</button>
+            <button class="download-csv" onclick="downloadRidesCSV()">Download CSV</button>
+          </div>
+        </div>
+        
+        <!-- Ride List Table -->
+        <div class="table-wrapper">
+          <table id="rideTable">
+            <thead>
+              <tr>
+                <th>Ride ID</th>
+                <th>Plate Number</th>
+                <th>Route</th>
+                <th>Time</th>
+                <th>Seats Available</th>
+                <th>Ride Type</th>
+                <th>Departure</th>
+                <th>Capacity</th>
+                <th>Queue</th>
+                <th>Image</th>
+              </tr>
+            </thead>
+            <tbody id="rideList"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Ride Modal -->
+  <div id="editRideModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Edit Ride</h2>
+      <label for="editPlateNumber">Plate Number</label>
+      <input type="text" id="editPlateNumber">
+      <label for="editTypeOfRide">Type of Ride</label>
+      <select id="editTypeOfRide">
+        <option value="Jeepney">Jeepney</option>
+        <option value="Service">Service</option>
+      </select>
+      <label for="editSeatingCapacity">Seating Capacity</label>
+      <input type="number" id="editSeatingCapacity">
+      <label for="editRoute">Route</label>
+      <input type="text" id="editRoute">
+      <label for="editSchedule">Schedule</label>
+      <input type="datetime-local" id="editSchedule">
+      <label for="editRideImage">Ride Image</label>
+      <input type="file" id="editRideImage" accept="image/*">
+      <div class="button-group">
+        <button id="updateRideButton">Update Ride</button>
+        <button onclick="closeEditModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fetch and display rides
+    async function fetchRides() {
+      const response = await fetch('/routes/rides');
+      const rides = await response.json();
+      const rideList = document.getElementById('rideList');
+
+      rideList.innerHTML = rides.map(ride => `
+        <tr class="ride-item" data-ride-id="${ride.ride_id}">
+          <td>${ride.ride_id}</td>
+          <td>${ride.plate_number}</td>
+          <td>${ride.route}</td>
+          <td>${ride.time}</td>
+          <td>${ride.seats_available}</td>
+          <td>${ride.ride_type}</td>
+          <td>${ride.departure}</td>
+          <td>${ride.capacity}</td>
+          <td>${ride.queue}</td>
+          <td><img src="${ride.image_url}" alt="Ride Image" style="width: 100px; height: 60px; object-fit: cover;"></td>
+        </tr>
+      `).join('');
+    }
+
+    // Download rides data as CSV
+    async function downloadRidesCSV() {
+      const response = await fetch('/routes/rides');
+      const rides = await response.json();
+
+      const csvRows = [
+        ['Ride ID', 'Plate Number', 'Route', 'Time', 'Seats Available', 'Ride Type', 'Departure', 'Capacity', 'Queue', 'Image'],
+        ...rides.map(ride => [
+          ride.ride_id,
+          ride.plate_number,
+          ride.route,
+          ride.time,
+          ride.seats_available,
+          ride.ride_type,
+          ride.departure,
+          ride.capacity,
+          ride.queue,
+          ride.image_url,
+        ]),
+      ];
+
+      const csvContent = csvRows.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'rides.csv';
+      link.click();
+    }
+
+    // Fetch rides on page load
+    fetchRides();
+  </script>
+</body>
+</html>

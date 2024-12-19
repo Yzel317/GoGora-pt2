@@ -101,7 +101,7 @@ body {
     margin-bottom: 10px;
   }
   
-  .add-ride, .add-schedule {
+  .add-ride, .add-schedule, .download-csv {
     background-color: #4285F4;
     color: #ffffff;
     border: none;
@@ -112,7 +112,7 @@ body {
     transition: background-color 0.3s;
   }
   
-  .add-ride:hover, .add-schedule:hover {
+  .add-ride:hover, .add-schedule:hover, .download-csv {
     background-color: #0A3981;
   }
   
@@ -404,6 +404,58 @@ body {
   
     .main-content h1 {
       font-size: 22px;
+    }
+  }
+  
+  .title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+  }
+  
+  /* Make the table scrollable on small screens */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 20px;
+  }
+  
+  #rideTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  #rideTable th, #rideTable td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  #rideTable th {
+    background-color: #f4f4f4;
+  }
+  
+  /* Media query for small screens */
+  @media (max-width: 768px) {
+    #rideTable th, #rideTable td {
+      padding: 8px;
+    }
+  
+    .header-actions {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .logo h2 {
+      font-size: 16px;
     }
   }
   
