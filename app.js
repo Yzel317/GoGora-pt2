@@ -1,21 +1,32 @@
 const express = require('express');
-const app = express();
 const path = require('path');
+const app = express();
 
-// Serve static files for script.js
-app.use('/js', express.static(path.join(__dirname, 'view', 'admin', 'routes')));
+// Routes
+const ridesRouter = require('./view/admin/api/rides');  
 
-// Serve uploads folder for images
-app.use('/model/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Serve exports folder for CSV files
-app.use('/model/exports', express.static(path.join(__dirname, 'exports')));
-
-// Update to use routes from 'view/admin/routes'
-const ridesRouter = require(path.join(__dirname, 'view', 'admin', 'routes', 'rides'));
-app.use('view/admin/api/rides', ridesRouter);  // The routes will now be available under /api/rides
-
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.listen(8080, () => console.log('Server started on port 8080'));
+app.use(express.static(path.join(__dirname, 'view/admin')));  // Serves static files from view/admin
+
+app.use('/api', express.static(path.join(__dirname, 'view/admin/api')));  // Serves files from view/admin/api
+
+// Serve static files (e.g., uploaded images)
+app.use('/model/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Routes setup for rides API
+app.use('/api/rides', ridesRouter);
+
+// Default route for catching any unhandled requests
+app.use((req, res) => {
+  res.status(404).send("Route not found");
+});
+
+// Start server on port 8080
+const port = 8080;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
+

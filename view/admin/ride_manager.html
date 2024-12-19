@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
-  <script src="/routes/script.js"></script>
+  <script src="/api/rides.js" defer></script>
+
   <style>
-    /* Button alignment */
     .title-section {
       display: flex;
       justify-content: space-between;
@@ -47,7 +47,7 @@
       </nav>
     </aside>
     <main class="main-content">
-      <!-- Rides Section -->
+      <!-- RideAVs Section -->
       <div class="title-section">
         <h1>Manage Rides</h1>
         <button class="add-ride" onclick="location.href='ride.html'">Edit Rides</button>
@@ -72,14 +72,19 @@
     </main>
   </div>
   <script>
-    // Fetch and display data for rides and schedules
+    // Function to fetch and display ride data
     async function fetchData() {
       try {
-        // Fetch ride data
-        const ridesResponse = await fetch('/api/rides'); // Replace with your server endpoint
-        const rides = await ridesResponse.json();
+        // Fetch data from the server's API endpoint
+        const ridesResponse = await fetch('/api/rides'); // Make request to the backend
+        if (!ridesResponse.ok) {
+          throw new Error('Failed to fetch rides');
+        }
+        const rides = await ridesResponse.json(); // Parse JSON response
         const ridesContainer = document.getElementById('rides-container');
-        ridesContainer.innerHTML = '';
+        ridesContainer.innerHTML = ''; // Clear the container before adding new data
+
+        // Loop through the rides data and display each ride
         rides.forEach(ride => {
           const rideItem = document.createElement('div');
           rideItem.className = 'ride-item';
@@ -93,30 +98,16 @@
           `;
           ridesContainer.appendChild(rideItem);
         });
-
-        // Fetch schedule data
-        const schedulesResponse = await fetch('/api/schedules'); // Replace with your server endpoint
-        const schedules = await schedulesResponse.json();
-        const schedulesContainer = document.getElementById('schedules-container');
-        schedulesContainer.innerHTML = '';
-        schedules.forEach(schedule => {
-          const scheduleItem = document.createElement('div');
-          scheduleItem.className = 'schedule-item';
-          scheduleItem.innerHTML = `
-            <p>Schedule ID: ${schedule.schedule_id}</p>
-            <p>Ride ID: ${schedule.ride_id}</p>
-            <p>Date: ${new Date(schedule.date).toLocaleDateString()}</p>
-            <p>Time: ${new Date(schedule.date).toLocaleTimeString()}</p>
-          `;
-          schedulesContainer.appendChild(scheduleItem);
-        });
       } catch (error) {
         console.error('Error fetching data:', error);
+        document.getElementById('rides-container').innerHTML = `<p>Failed to load rides data.</p>`;
       }
     }
 
-    // Fetch data on page load
+    // Call the fetchData function to load the data when the page loads
     fetchData();
   </script>
+  
+  
 </body>
 </html>
