@@ -28,6 +28,26 @@
       border-radius: 5px;
       background-color: #f9f9f9;
     }
+    table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            font-size: larger;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
   </style>
 </head>
 <body>
@@ -63,7 +83,16 @@
         </div>
 
         <!-- Schedule List -->
-        <div id="schedulesTable"></div>
+      <div id="schedulesTableDiv">
+        <table id = "schedulesTable">
+          <tr>
+            <th>ID</th>
+            <th>Departure</th>
+          </tr>
+          <tr><th>Time</th></tr>
+        </table>
+      </div>
+
       </div>
 
       <!-- Edit Schedule Modal -->
@@ -80,20 +109,19 @@
 
   <script>
     async function fetchSchedules() {
-      const response = await fetch('/api/schedules');
+      const response = await fetch('/api/schedule');
       const schedules = await response.json();
       const schedulesTable = document.getElementById('schedulesTable');
+
       schedulesTable.innerHTML = schedules.map(schedule => `
-        <div class="schedule-item">
-          <span>${schedule.route} - ${schedule.time}</span>
-          <div>
-            <button onclick="editSchedule(${schedule.schedule_id})">Edit</button>
-            <button onclick="deleteSchedule(${schedule.schedule_id})">Delete</button>
-          </div>
-        </div>
+        <tr class="schedule-item" data-schedule-id="${schedule.ride_id}">
+          <td>${schedule.ride_id}</td>
+          <td>${schedule.time}</td>
+          <td>${schedule.departure}</td>
+        </tr>
       `).join('');
     }
-
+/*
     async function addSchedule() {
       const scheduleData = {
         route: document.getElementById('scheduleRoute').value,
@@ -155,8 +183,7 @@
       } else {
         alert('Failed to delete schedule');
       }
-    }
-
+    } */
     // Fetch schedules on page load
     fetchSchedules();
   </script>

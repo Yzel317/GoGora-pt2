@@ -4,6 +4,7 @@ const app = express();
 
 // Routes
 const ridesRouter = require('./view/admin/api/rides');  // Ensure the path is correct
+const scheduleRouter = require('./view/admin/api/schedule');
 
 // Middleware
 app.use(express.json());
@@ -21,6 +22,9 @@ app.use('/model/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes setup
 app.use('/api/rides', ridesRouter);
+
+// schedule setup
+app.use('/api/schedule', scheduleRouter);
 
 // Default route for catching any unhandled requests
 app.use((req, res) => {
