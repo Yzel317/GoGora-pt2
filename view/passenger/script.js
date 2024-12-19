@@ -1,10 +1,4 @@
 // Switch between forms (register and login)
-document.getElementById('show-register-form').addEventListener('click', function (event) {
-    event.preventDefault();
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('registration-form').style.display = 'block';
-});
-
 function validatePasswordLength(password) {
     return password.length >= 8 && password.length <= 16;
 }
@@ -24,7 +18,7 @@ document.getElementById('registration-form').addEventListener('submit', function
     const formData = new FormData(this);
 
     // Send form data to register.php via AJAX
-    fetch('includes/register.php', {
+    fetch('/control/includes/register.php', {
         method: 'POST',
         body: formData
     })
@@ -32,46 +26,13 @@ document.getElementById('registration-form').addEventListener('submit', function
         .then(data => {
             if (data.success) {
                 if (confirm(data.message)) {
-                    window.location.href = 'manage.php';
+                    window.location.href = '/view/manager/manage.php';
                 }
             } else {
                 confirm(data.message);
             }
         })
       
-});
-
-// Handle login form submission
-document.getElementById('login-form-element').addEventListener('submit', function (event) {
-    const password = document.getElementById('login-password').value;
-
-    // Check password length
-    if (!validatePasswordLength(password)) {
-        alert('Password must be between 8 and 15 characters.');
-        event.preventDefault(); // Prevent form submission
-        return;
-    }
-
-    const formData = new FormData(this);
-
-    fetch('includes/login.php', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                if (confirm(data.message)) {
-                    window.location.href = 'booking.php'; // Redirect to booking page
-                }
-            } else {
-                confirm(data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            confirm('Login failed. Please try again.');
-        });
 });
 
 // // Handle photo upload form submission

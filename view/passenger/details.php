@@ -1,12 +1,11 @@
 <!-- Frontend by: Mark Jervin Galarce, Chryzel Beray, and Justine Luicas 
      Backend by: Jemma Niduaza and Justine Lucas -->
-<?php
+     <?php
 require_once('../../control/includes/db.php');
 
 // Get the ride_id from the POST data
 if (isset($_POST['ride_id'])) {
     $ride_id = $_POST['ride_id'];
-
     // Fetch ride details along with reservation details
     $query = "SELECT r.*, res.total_fare, res.payment_method, res.payment_status, res.status 
               FROM rides r 
@@ -42,7 +41,6 @@ if (isset($_POST['ride_id'])) {
     echo "No ride selected.";
     exit();
 }
-
 $stmt->close();
 $conn->close();
 ?>
@@ -54,11 +52,10 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Details</title>
-    <link rel="icon" type="image/png" href="assets/favicon.png"> 
+    <link rel="icon" type="image/png" href="../assets/favicon.png"> 
     <link rel="stylesheet" href="styles.css">
 </head>
 <body id="details-bod">
-    <!-- Container of the available rides the passenger can book -->
     <div class="details-cont">
         <h1>Review Your Ride Details</h1>
         <div class="ride-details">
@@ -87,16 +84,15 @@ $conn->close();
                 <span class="value">₱<?= htmlspecialchars($total_fare); ?></span>
             </div>
             <div class="detail-item">
-                <span class="label">Payment Method:</span> 
+                <span class="label">Payment Method: </span> 
                 <span class="value"><?= htmlspecialchars($payment_method); ?></span>
             </div>
             <div class="detail-item">
-                <span class="label">Payment Status:</span> 
+                <span class="label">Payment Status: </span> 
                 <span class="value"><?= htmlspecialchars($payment_status); ?></span>
             </div>
-
             <div class="button-section">
-                <form action="confirmation.php" method="POST">
+                <form action="gcash.php" method="POST">
                     <input type="hidden" name="ride_id" value="<?= htmlspecialchars($ride_id); ?>">
                     <button type="submit" class="confirm-btn">Confirm</button>
                 </form>

@@ -4,14 +4,14 @@
 <head>
     <link rel="stylesheet" href="gstyle.css">
     <title>Gcash Merchant</title>
-    <link rel="icon" type="image/png" href="../assets/Gcash-logo.png">
+    <link rel="icon" type="image/png" href="/view/assets/Gcash-logo.png">
 </head>
 <body>
     <div class="upperLogo">
-        <img src="../assets/Gcash.png" alt="GcashMerchant">
+        <img src="/view/assets/Gcash.png" alt="GcashMerchant">
     </div>
     <div class="paymentContainer"> <!-- Payment container with border -->
-        <div class="paymentAmount">PHP 13.00</div>
+        <div class="paymentAmount">PHP 15.00</div>
         <div class="paymentStatus">Payment successful</div>
         <hr></hr>
         <div class="paymentDetails">
@@ -29,7 +29,7 @@
     </div>
     <div class="row">
         <div class="label">Order amount</div>
-        <div class="value">PHP 13.00</div>
+        <div class="value">PHP 15.00</div>
     </div>
     <div class="row">
         <div class="label">Transaction no.</div>
@@ -48,13 +48,13 @@
     </div>
     <div class="returnToMerchant">
         <button id="returnBtn" class="returnbutn" onclick="window.location.href='confirmation.php'">
-            Return to Merchant (10)
+            Return to Merchant (5)
         </button>
     </div>
 
     <script>
         // Countdown Timer Script
-        let countdown = 10;
+        let countdown = 5;
         const button = document.getElementById("returnBtn");
 
         const timer = setInterval(function() {

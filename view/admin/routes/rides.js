@@ -2,16 +2,12 @@
 const express = require('express');
 const app = express();
 const router = express.Router();
-const db = require('../db');
+const db = require('./db');
 const multer = require('multer');
 const path = require('path');
 const { createObjectCsvWriter } = require('csv-writer');
-const ridesRoute = require('./routes/rides'); // Verify this path is correct
 
 app.use(express.json());
-
-// Use the rides route
-app.use('/api/rides', ridesRoute);
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

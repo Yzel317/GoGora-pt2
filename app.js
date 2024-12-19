@@ -17,4 +17,4 @@ app.use('/model/exports', express.static(path.join(__dirname, 'exports')));
 // Define the route for the rides API
 app.use('/api/rides', ridesRouter);  // The routes will now be available under /api/rides
 
-app.listen(3000, () => console.log('Server started on port 3000'));
+app.listen(8080, () => console.log('Server started on port 8080'));

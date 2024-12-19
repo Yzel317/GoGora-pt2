@@ -93,6 +93,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="input-group">
         <label for="confirm-password">Confirm Password</label>
         <input type="password" id="confirm-password" name="confirmPassword" placeholder="Re-enter your password" required>
+        <label for="role">Select Role</label>
+        <select id="role" name="role" required>
+            <option value="Student">Student</option>
+            <option value="Faculty">Faculty</option>
+            <option value="Employee">Employee</option>
+            
+        </select>
     </div>
 
     <!-- Display Validation Errors -->

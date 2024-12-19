@@ -1,71 +1,79 @@
 <!-- Frontend by: Jemma Niduaza
      Backend by: Jemma Niduaza -->
 <?php
-require_once('../../control/includes/db.php');
-// Capture ride_id from POST data
-$ride_id = $_POST['ride_id'] ?? '';
+session_start(); // Start session to access data
+require_once $_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php';
 
-// Initialize variables for ride and reservation details
-$route = '';
-$time = '';
-$seats_available = '';
-$ride_type = '';
-$plate_number = '';
-$total_fare = '';
-$capacity = '';
-$status = '';
-$payment_status = '';
-$payment_method = '';
-$departure = '';
-$queue = '';
-
-// Fetch ride and reservation details from the database
-if ($ride_id) {
-    $sql = "
-        SELECT r.route, r.time, r.seats_available, r.ride_type, r.plate_number, r.capacity, r.departure, r.queue,
-               res.status, res.payment_status, res.`total_fare` AS total_fare, res.`payment_method` AS payment_method
-        FROM rides AS r
-        JOIN reservations AS res ON r.ride_id = res.ride_id
-        WHERE r.ride_id = ?
-    ";
-    $stmt = $conn->prepare($sql);
-    
-    // Check if the statement was prepared successfully
-    if (!$stmt) {
-        echo "SQL preparation error: " . $conn->error;
-        exit();
-    }
-
-    $stmt->bind_param("i", $ride_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    // Check if ride and reservation details were found
-    if ($result->num_rows > 0) {
-        $details = $result->fetch_assoc();
-        
-        // Assign the retrieved values to variables
-        $route = $details['route'];
-        $time = $details['time'];
-        $seats_available = $details['seats_available'];
-        $ride_type = $details['ride_type'];
-        $plate_number = $details['plate_number'];
-        $capacity = $details['capacity'];
-        $departure = $details['departure'];
-        $status = $details['status'];
-        $payment_status = $details['payment_status'];
-        $total_fare = $details['total_fare'];
-        $payment_method = $details['payment_method'];
-        $queue = $details['queue'];
-    } else {
-        echo "No ride or reservation details found for the selected ride.";
-        exit();
-    }
+// Ensure the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo "User not logged in.";
+    exit();
 }
 
-$stmt->close();
-$conn->close();
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
+    // Retrieve data from session
+    $ride_id = $_SESSION['ride_id'] ?? null;
+    $payment_status = $_SESSION['payment_status'] ?? 'Pending';
+    $user_id = $_SESSION['user_id'] ?? null; // User ID from session
+    $plate_number = $_POST['plate_number'] ?? null;
+    $departure = $_POST['departure'] ?? null;
+    $capacity = $_POST['capacity'] ?? null;
+    $route = $_POST['route'] ?? null;
+
+    if (!$ride_id) {
+        echo "Invalid ride.";
+        exit();
+    }
+
+    if ( !$user_id) {
+        echo "user not logged in.";
+        exit();
+    }
+
+    // Insert reservation into the database
+    $reservation_time = date('Y-m-d H:i:s');
+    $status = 'Active';
+    $total_fare = 13; // Replace with dynamic value if needed
+    $payment_method = 'Gcash';
+
+    $query = "
+        INSERT INTO reservations (user_id, ride_id, reservation_time, status, payment_status, total_fare, payment_method)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ";
+
+    $stmt = $conn->prepare($query);
+    if (!$stmt) {
+        die("Database error: " . $conn->error);
+    }
+
+    $stmt->bind_param("iisssis", $user_id, $ride_id, $reservation_time, $status, $payment_status, $total_fare, $payment_method);
+
+    if ($stmt->execute()) {
+        // Fetch queue position
+        $query = "SELECT COUNT(*) AS queue FROM reservations WHERE ride_id = ? AND status = 'Active'";
+        $stmt = $conn->prepare($query);
+        if ($stmt) {
+            $stmt->bind_param("i", $ride_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $queue = $row['queue'] ?? 1; // Default to 1 if no queue data is found
+        } else {
+            $queue = 'Unknown'; // Fallback if query fails
+        }
+    
+        unset($_SESSION['ride_id'], $_SESSION['payment_status']); // Clear session data
+    } else {
+        echo "Error: Could not store reservation. " . $stmt->error;
+        exit();
+    }
+    
+}
+
+    $stmt->close();
+    $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -73,14 +81,14 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Confirmation</title>
-    <link rel="icon" type="image/png" href="assets/favicon.png"> 
+    <link rel="icon" type="image/png" href="../assets/favicon.png"> 
     <link rel="stylesheet" href="styles.css">
 </head>
 <body id="confirm-bod">
     <!-- Container for the booking details of the passenger -->
     <div class="confirm-cont">
         <h1>Booking Confirmed!</h1>
-        <img src="assets/confirm.png" alt="Confirmation">
+        <img src="/view/assets/confirm.png" alt="Confirmation">
         <span class="label">Thank you for booking! Your queue number is:</span> <span class="value"><?= htmlspecialchars($queue); ?></span>
         <p>Please be ready at your pickup location. You are currently no. <span class="value"><?= htmlspecialchars($queue); ?></span> in queue.</p>
 
