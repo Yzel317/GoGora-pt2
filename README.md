@@ -34,9 +34,9 @@ Anyway, sana makapasa na tayo.
 - Conduct system maintenance and log errors.
 
 ## Technologies Used
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: PHP
-- **Database**: MySQL
+- **Frontend**: HTML, CSS, JavaScript, AJAX
+- **Backend**: PHP, NodeJs, Express
+- **Database**: MySQL, Mysql2
 
 ## Links Management
 - **A. httpd.conf**
