@@ -38,31 +38,66 @@ Anyway, sana makapasa na tayo.
 - **Backend**: PHP, NodeJs, Express
 - **Database**: MySQL, Mysql2
 
-## Links Management
-- **A. httpd.conf**
-- change niyo lang yung port to "8080" or the line should be "Listen 8080"
+## Configurations and Installations
+### Installations
+- **A. XAMPP**
+- Install xampp if xampp is still not installed in your device
+- **B. NodeJS, Express, and Mysql2**
+- **B.1 Package.json**
+- should run upon installation of nodejs
+- **B.2 Terminal Commands**
+- npm install express
+- npm install nodejs
+- npm install mysql2
+- npm init -y --> for creating and/or updating package.json
 
-- **B. httpd.vhosts**
+### Configurations
+- **A. httpd.conf --> XAMPP**
+- Change the listening port to "8080" or the line should be "Listen 8080"
+- Modify all "Require all denied" lines to "Require all granted"
+
+- **B. httpd.vhosts --> XAMPP**
 - add the following lines 
 - "<VirtualHost *:8080>
--    DocumentRoot "C:/xampp/htdocs/GoGora-pt2/view/admin/dashboard.html"           
--    ServerName gomingo
-- </VirtualHost>" 
+    DocumentRoot "C:/xampp/htdocs/GoGora-pt2/"
+    ServerName Gogora
+    </VirtualHost>" 
+- "<VirtualHost *:8080>
+   DocumentRoot "C:/xampp/htdocs/GoGora-pt2/view/admin/dashboard.html    
+   ServerName gomingo
+ </VirtualHost>" 
 
 - **C. C:/Windows/System32/drivers/etc/hosts**
+- Pre-requisites: get your ip address using your command prompt terminal
 - edit with notepad++ , not unless notepad or hosts is already opened via administration 
 - add the following ips in the list
 - "<your ip address> gogora" for the hero passenger and manager access
 - "<your ip address> gomingo" for the admin link
 
-- **Accessing the links**
-- simply enter the domain name with the port e.g. "gomingo:8080"
-- to access the database enter "localhost:8080/phpmyadmin"
+-**D. Firewalls and Antivirus**
+ - Add port 80 at the Advanced Securtity inbound and outbound rules
+ - disable firewall for the mean time
 
-## Installation and xampp configurations
-- **http.config**
-- modify all require to granted
+ - **E. Services**
+ - Turn off or disable World Wide Publishing to disable IIS
 
+## Running and Accessing the Servers and Website
+### Running and Starting the Server
+- **Xampp**
+- Simply start Apache and Mysql
+- **NodeJS**
+- install nodejs <instructions found below>
+- Enter command "node app.js" from Gogora-pt2 root
+- **Database**
+- For running the database start MYSQL via Xampp controller. This is used for both NodeJS(for UI purposes) and Xampp
+
+### Running the Website
+- **Passengers and Managers**
+- enter "http://Gogora:8080" or simply "Gogora:8080"
+- **Admin**
+- enter "http://Gomingo:5000" or simply "Gomingo:5000"
+- **Database**
+- enter "locahost:8080/phpmyadmin"
 
 ## enjoy have fun !
 
