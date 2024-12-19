@@ -1,4 +1,3 @@
-<!--Authors: John Gabriel Pampo, Justine Lucas-->>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,12 +20,63 @@
       margin-top: 20px;
     }
 
+    #rides-container, #schedules-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
     .ride-item, .schedule-item {
       border: 1px solid #ddd;
       padding: 10px;
       margin: 10px 0;
       border-radius: 5px;
       background-color: #f9f9f9;
+    }
+
+    .ride-item.header, .schedule-item.header {
+      font-weight: bold;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .ride-item, .schedule-item {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .ride-item p, .schedule-item p {
+      width: 15%;
+      text-align: center;
+      margin: 0;
+    }
+
+    .ride-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .search-filters {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .search-filters input, .search-filters select {
+      padding: 5px;
+    }
+
+    .search-filters button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    /* Add styling to ensure visibility of headers */
+    .header p {
+      font-weight: bold;
+      color: #333;
     }
   </style>
 </head>
@@ -47,17 +97,46 @@
       </nav>
     </aside>
     <main class="main-content">
-      <!-- RideAVs Section -->
+      <!-- Rides Section -->
       <div class="title-section">
         <h1>Manage Rides</h1>
         <button class="add-ride" onclick="location.href='ride.html'">Edit Rides</button>
       </div>
+
+      <div class="search-filters">
+        <input type="text" id="searchInput" placeholder="Search Rides" oninput="filterRides()">
+        <select id="filterPlateNumber">
+          <option value="">Filter by Ride ID</option>
+        </select>
+        <select id="filterRoute">
+          <option value="">Filter by Route</option>
+        </select>
+        <select id="filterDeparture">
+          <option value="">Filter by Departure</option>
+        </select>
+        <select id="filterSeatsAvailable">
+          <option value="">Filter by Seats Available</option>
+        </select>
+        <button onclick="applyFilters()">Apply</button>
+        <button onclick="clearFilters()">Clear All</button>
+      </div>
+
       <div class="rides-section">
         <h2>Rides</h2>
         <div id="rides-container">
-          <!-- Ride items will be dynamically loaded here -->
+          <!-- Ride header -->
+          <div class="ride-item header">
+            <p>Ride ID</p>
+            <p>Plate Number</p>
+            <p>Image</p>
+            <p>Route</p>
+            <p>Departure</p>
+            <p>Seats Available</p>
+          </div>
+          <!-- Ride items will be populated dynamically here -->
         </div>
       </div>
+
       <!-- Schedules Section -->
       <div class="title-section">
         <h1>Manage Schedules</h1>
@@ -66,48 +145,134 @@
       <div class="schedules-section">
         <h2>Schedules</h2>
         <div id="schedules-container">
-
+          <!-- Schedule header -->
+          <div class="schedule-item header">
+            <p>Schedule ID</p>
+            <p>Route</p>
+            <p>Departure</p>
+            <p>Seats Available</p>
+          </div>
+          <!-- Schedule items will be populated dynamically here -->
         </div>
       </div>
     </main>
   </div>
+
   <script>
-    // Function to fetch and display ride data
+    let allRides = [];  // Store all fetched rides
+
+    // Fetch data for rides
     async function fetchData() {
       try {
-        // Fetch data from the server's API endpoint
-        const ridesResponse = await fetch('/api/rides'); // Make request to the backend
+        const ridesResponse = await fetch('/api/rides'); 
         if (!ridesResponse.ok) {
           throw new Error('Failed to fetch rides');
         }
-        const rides = await ridesResponse.json(); // Parse JSON response
-        const ridesContainer = document.getElementById('rides-container');
-        ridesContainer.innerHTML = ''; // Clear the container before adding new data
-
-        // Loop through the rides data and display each ride
-        rides.forEach(ride => {
-          const rideItem = document.createElement('div');
-          rideItem.className = 'ride-item';
-          rideItem.innerHTML = `
-            <p>Ride ID: ${ride.ride_id}</p>
-            <p>Plate Number: ${ride.plate_number}</p>
-            <p>Driver: ${ride.driver || 'N/A'}</p>
-            <p>Route: ${ride.route}</p>
-            <p>Departure: ${new Date(ride.departure).toLocaleString()}</p>
-            <p>Seats Available: ${ride.seats_available}</p>
-          `;
-          ridesContainer.appendChild(rideItem);
-        });
+        const rides = await ridesResponse.json();
+        allRides = rides;
+        displayRides(rides);
+        populateFilters(rides);  // Populate the filter options
       } catch (error) {
         console.error('Error fetching data:', error);
         document.getElementById('rides-container').innerHTML = `<p>Failed to load rides data.</p>`;
       }
     }
 
-    // Call the fetchData function to load the data when the page loads
+    // Display rides
+    function displayRides(rides) {
+      const ridesContainer = document.getElementById('rides-container');
+      ridesContainer.innerHTML = ''; // Clear the container
+
+      if (rides.length === 0) {
+        ridesContainer.innerHTML = `<p style="color: gray;">Sorry 🥲 There are no current rides available with the information you are looking for 🥲</p>`;
+        return;
+      }
+
+      rides.forEach(ride => {
+        const rideItem = document.createElement('div');
+        rideItem.className = 'ride-item';
+        rideItem.innerHTML = `
+          <p>${ride.ride_id}</p>
+          <p>${ride.plate_number}</p>
+          <img src="${ride.image || '/images/default-vehicle.jpg'}" alt="Image">
+          <p>${ride.route}</p>
+          <p>${new Date(ride.departure).toLocaleString()}</p>
+          <p>${ride.seats_available}</p>
+        `;
+        ridesContainer.appendChild(rideItem);
+      });
+    }
+
+    // Filter rides based on search input
+    function filterRides() {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const filteredRides = allRides.filter(ride => {
+        return (
+          ride.ride_id.toString().includes(searchInput) ||
+          ride.plate_number.toLowerCase().includes(searchInput) ||
+          ride.route.toLowerCase().includes(searchInput) ||
+          ride.seats_available.toString().includes(searchInput)
+        );
+      });
+      displayRides(filteredRides);
+    }
+
+    // Apply filters to the rides
+    function applyFilters() {
+      const plateNumber = document.getElementById('filterPlateNumber').value.toLowerCase();
+      const route = document.getElementById('filterRoute').value.toLowerCase();
+      const departure = document.getElementById('filterDeparture').value.toLowerCase();
+      const seatsAvailable = document.getElementById('filterSeatsAvailable').value.toLowerCase();
+
+      const filteredRides = allRides.filter(ride => {
+        return (
+          (plateNumber === "" || ride.ride_id.toString().includes(plateNumber)) &&
+          (route === "" || ride.route.toLowerCase().includes(route)) &&
+          (departure === "" || new Date(ride.departure).toLocaleDateString().includes(departure)) &&
+          (seatsAvailable === "" || ride.seats_available.toString().includes(seatsAvailable))
+        );
+      });
+
+      displayRides(filteredRides);
+    }
+
+    // Clear all filters
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterPlateNumber').value = '';
+      document.getElementById('filterRoute').value = '';
+      document.getElementById('filterDeparture').value = '';
+      document.getElementById('filterSeatsAvailable').value = '';
+      displayRides(allRides);
+    }
+
+    // Populate filter dropdowns with dynamic values
+    function populateFilters(rides) {
+      const plateNumbers = [...new Set(rides.map(ride => ride.ride_id.toString()))];
+      const routes = [...new Set(rides.map(ride => ride.route))];
+      const departureDates = [...new Set(rides.map(ride => new Date(ride.departure).toLocaleDateString()))];
+      const seatsAvailableOptions = [...new Set(rides.map(ride => ride.seats_available.toString()))];
+
+      populateDropdown('filterPlateNumber', plateNumbers);
+      populateDropdown('filterRoute', routes);
+      populateDropdown('filterDeparture', departureDates);
+      populateDropdown('filterSeatsAvailable', seatsAvailableOptions);
+    }
+
+    // Helper function to populate dropdown options
+    function populateDropdown(selectId, options) {
+      const select = document.getElementById(selectId);
+      select.innerHTML = '<option value="">All</option>';
+      options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        select.appendChild(optionElement);
+      });
+    }
+
+    // Fetch data when the page loads
     fetchData();
   </script>
-  
-  
 </body>
 </html>
