@@ -7,52 +7,13 @@
   <title>GoGora - Schedule Management</title>
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="script.js" defer></script>
   <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <script src="./api/schedules.js"></script>
+
   <style>
-    /* Button alignment */
-    .title-section {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .rides-section, .schedules-section {
-      margin-top: 20px;
-    }
-
-    .ride-item, .schedule-item {
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-    }
-    table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            font-size: larger;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        tr:hover {
-            background-color: #ddd;
-        }
-
-    /* Schedule specific styles */
-    .schedule-controls {
+    /* Match ride.html styles */
+    .window-controls {
       position: absolute;
       right: 10px;
       top: 10px;
@@ -60,18 +21,88 @@
       gap: 8px;
     }
 
-    .schedule-modal-content.minimized {
+    .window-control {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      color: rgb(255, 255, 255);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .minimize { background-color: #edd132; color: black; }
+    .maximize { background-color: #34A853; color: black; }
+    .close-btn { background-color: #c73421; color: black; }
+
+    .modal-content.minimized {
       transform: scale(0.7);
       width: 70%;
       margin-top: 80vh;
       opacity: 0.8;
     }
 
-    .schedule-modal-content.maximized {
+    .modal-content.maximized {
       width: 95vw;
       max-width: none;
       height: 90vh;
       margin: 5vh auto;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .add-schedule, .delete-schedule, .download-csv {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      color: white;
+    }
+
+    .add-schedule {
+      background-color: #34A853; /* Google green */
+    }
+
+    .delete-schedule {
+      background-color: #EA4335; /* Google red */
+    }
+
+    .download-csv {
+      background-color: #4285F4; /* Google blue */
+    }
+
+    .add-schedule:hover, .delete-schedule:hover, .download-csv:hover {
+      opacity: 0.9;
+    }
+
+    .schedule-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .schedule-item p {
+      margin: 0;
+      flex: 1;
+      text-align: center;
+    }
+
+    .schedule-item.header {
+      background: #f5f5f5;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -84,224 +115,183 @@
       <nav>
         <ul class="menu">
           <li><a href="index.html" class="menu-item"><i class="icon">🏠</i> Dashboard</a></li>
-          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a></li>
+          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a>
+            <a href="ride.html" class="menu-item" style="padding-left: 45px;"><i class="icon">🚖</i> Rides</a>
+            <a href="schedules.html" class="menu-item" style="padding-left: 45px;"><i class="icon">📅</i> Schedules</a>
+          </li>
           <li><a href="account_manager.html" class="menu-item"><i class="icon">👥</i> Manage Accounts</a></li>
           <li><a href="statistics.html" class="menu-item"><i class="icon">📊</i> Statistics</a></li>
           <li><a href="blacklist.html" class="menu-item"><i class="icon">🚫</i> Blacklist Passengers</a></li>
         </ul>
       </nav>
     </aside>
+
     <main class="main-content">
-      <header>
+      <div class="title-section">
         <h1>Manage Schedules</h1>
-      </header>
+      </div>
+
+      <div class="search-filters">
+        <h3>Search:</h3>
+        <input type="text" id="searchInput" placeholder="Search Schedules" oninput="filterSchedules()">
+        <h3>Route:</h3>
+        <select id="filterRoute">
+          <option value="">Filter by Route</option>
+        </select>
+        <h3>Departure:</h3>
+        <select id="filterDeparture">
+          <option value="">Filter by Departure</option>
+        </select>
+        <button onclick="applyFilters()">Apply</button>
+        <button onclick="clearFilters()">Clear All</button>
+      </div>
 
       <div class="schedules-section">
-        <!-- Add Schedule Form -->
-        <div class="title-section">
+        <div class="header-buttons-container">
           <h2>Schedules</h2>
-          <form id="addScheduleForm">
-            <!--  
-            <input type="text" id="scheduleRoute" placeholder="Route" required>
-            <input type="datetime-local" id="scheduleTime" required>
-            -->
-            <button type="button" id="addNewScheduleBtn">Add New Schedule</button>
-          </form>
+          <div class="action-buttons">
+            <button class="add-schedule" onclick="toggleAddScheduleMode()">Add Schedule</button>
+            <button class="delete-schedule" onclick="toggleDeleteMode()">Delete Schedule</button>
+            <button class="download-csv" onclick="downloadSchedulesCSV()">Download CSV</button>
+          </div>
         </div>
 
-        <div id="addScheduleUI" style="display: none;">
-          <h3>Add a New Schedule</h3>
-          <form id="addScheduleForm">
-
-            <label for="scheduleRoute">Route:</label>
-            <input type="text" id="scheduleRoute" placeholder="Route" required>
-
-            <label for="scheduleDeparture">Departure:</label>
-            <input type="text" id="scheduleDeparture" class="scheduleDate" placeholder="Departure" required>
-
-            <label for="scheduleSeats">Seats:</label>
-            <input type="text" id="scheduleSeats" placeholder="Seats" required>
-        
-            <button type="submit" id="addScheduleBtn">Add Schedule</button>
-          </form>
+        <div class="schedule-item header">
+          <p>Schedule ID</p>
+          <p>Ride ID</p>
+          <p>Route</p>
+          <p>Departure</p>
+          <p>Seats Available</p>
+          <p>Actions</p>
         </div>
 
-        <!-- Schedule List -->
+        <div id="schedules-container">
+          <div class="schedule-item">
+            <p>1</p>
+            <p>1</p>
+            <p>Bakakeng - Main</p>
+            <p>March 19, 2024 7:00 AM</p>
+            <p>23</p>
+            <p>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </p>
+          </div>
 
-      <div id="schedulesTableDiv">
-        <table id = "scheduleTableHeader">
-          <tr>
-            <th>Schedule ID</th>
-            <th>Ride ID</th>
-            <th>Route</th>
-            <th>Departure</th>
-            <th>Seats Available</th>
-          </tr>
-        </table>
-        <table id = "schedulesTable">
-          <tr>
-            <th>Schedule ID</th>
-            <th>Ride ID</th>
-            <th>Route</th>
-            <th>Departure</th>
-            <th>Seats Available</th>
-          </tr>
-        </table>
-      </div>
+          <div class="schedule-item">
+            <p>2</p>
+            <p>2</p>
+            <p>Main - Bakakeng</p>
+            <p>March 19, 2024 8:30 AM</p>
+            <p>23</p>
+            <p>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </p>
+          </div>
 
-      </div>
+          <div class="schedule-item">
+            <p>3</p>
+            <p>3</p>
+            <p>Mansion - Igorot Park</p>
+            <p>March 19, 2024 9:00 AM</p>
+            <p>15</p>
+            <p>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </p>
+          </div>
 
-      <!-- Edit Schedule Modal -->
-      <div id="editScheduleModal" style="display: none;">
-        <h3>Edit Schedule</h3>
-        <form id="editScheduleForm">
-          <input type="text" id="editScheduleRoute" placeholder="Route" required>
-          <input type="datetime-local" id="editScheduleTime" required>
-          <button type="button" id="updateScheduleButton">Update Schedule</button>
-        </form>
+          <div class="schedule-item">
+            <p>4</p>
+            <p>4</p>
+            <p>Igorot Park - Bakakeng</p>
+            <p>March 19, 2024 10:30 AM</p>
+            <p>15</p>
+            <p>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </p>
+          </div>
+
+          <div class="schedule-item">
+            <p>5</p>
+            <p>5</p>
+            <p>Cathedral - Igorot Park</p>
+            <p>March 19, 2024 11:00 AM</p>
+            <p>23</p>
+            <p>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </p>
+          </div>
+        </div>
       </div>
     </main>
   </div>
 
-  <script>
-  async function fetchSchedules() {
-      const response = await fetch('/api/schedule');
-      const schedules = await response.json();
-      const schedulesTable = document.getElementById('schedulesTable');
+  <!-- Add Schedule Modal -->
+  <div id="addScheduleModal" class="modal">
+    <div class="modal-content">
+      <div class="window-controls">
+        <button class="window-control minimize" onclick="minimizeModal('addScheduleModal')">─</button>
+        <button class="window-control maximize" onclick="maximizeModal('addScheduleModal')">□</button>
+        <button class="window-control close-btn" onclick="closeAddModal()">×</button>
+      </div>
+      <h2>Add New Schedule</h2>
+      <form id="addScheduleForm">
+        <div class="form-group">
+          <label for="scheduleRideId">Ride ID:</label>
+          <input type="number" id="scheduleRideId" required>
+        </div>
+        <div class="form-group">
+          <label for="scheduleRoute">Route:</label>
+          <input type="text" id="scheduleRoute" required>
+        </div>
+        <div class="form-group">
+          <label for="scheduleDeparture">Departure:</label>
+          <input type="datetime-local" id="scheduleDeparture" required>
+        </div>
+        <div class="form-group">
+          <label for="scheduleSeats">Seats Available:</label>
+          <input type="number" id="scheduleSeats" required>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="save-btn">Add Schedule</button>
+          <button type="button" class="cancel-btn" onclick="closeAddModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-      schedulesTable.innerHTML = schedules.map(schedule => `
-        <tr class="schedule-item" data-schedule-id="${schedule.sched_id}">
-          <td>${schedule.sched_id}</td>
-          <td>${schedule.route}</td>
-          <td>${schedule.departure}</td>
-          <td>${schedule.seats_available}</td>
-          <td><button onclick="deleteSchedule(${schedule.sched_id})">Delete</button></td>
-        </tr>
-      `).join('');
-    }
-
-
-
-  async function addSchedule(event) {
-  event.preventDefault(); // Prevent page reload on form submission
-
-  const route = document.getElementById('scheduleRoute').value;
-  const departure = document.getElementById('scheduleDeparture').value;
-  const seatsAvailable = parseInt(document.getElementById('scheduleSeats').value, 10);
-
-  console.log(rideId);
-  try {
-    const response = await fetch('/api/schedule', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ route, departure, seats_available: seatsAvailable }),
-    });
-
-    console.log(rideId);
-
-    // Check if the response is JSON
-    const responseData = await response.json();
-
-    console.log(responseData);
-
-    if (response.ok) {
-      alert('Schedule added successfully!');
-      document.getElementById('addScheduleForm').reset(); // Clear the form
-      fetchSchedules(); // Reload the schedules
-    } else {
-      alert(`Error adding schedule: ${responseData.error}`);
-    }
-  } catch (error) {
-    console.error('Error adding schedule:', error);
-    alert('Failed to add schedule.');
-  }
-}
-
-async function deleteSchedule(sched_id) {
-  if (!confirm('Are you sure you want to delete this schedule?')) return;
-
-  try {
-    const response = await fetch(`/api/schedule/${sched_id}`, {
-      method: 'DELETE',
-    });
-
-    const responseData = await response.json();
-
-    if (response.ok) {
-      alert('Schedule deleted successfully');
-      fetchSchedules(); // Refresh the schedule list
-    } else {
-      console.error('Delete failed:', responseData.error);
-      alert(`Error deleting schedule: ${responseData.error}`);
-    }
-  } catch (error) {
-    console.error('Error deleting schedule:', error);
-    alert('Failed to delete schedule.');
-  }
-}
-
-// Bind event listener to the add schedule button
-document.getElementById('addScheduleBtn').addEventListener('click', addSchedule);
-
-
-document.getElementById('addScheduleForm').addEventListener('click', () => {
-  const addScheduleUI = document.getElementById('addScheduleUI');
-    addScheduleUI.style.display = addScheduleUI.style.display === 'none' ? 'block' : 'none';
-});
-
-flatpickr('#scheduleDeparture', {
-    enableTime: true,         // Enables time selection
-    dateFormat: 'Y-m-d H:i',  // Sets date-time format (e.g., 2024-12-20 08:00)
-    minDate: 'today',         // Prevents selecting past dates
-});
-    
-/*
-    async function editSchedule(id) {
-      const response = await fetch(`/api/schedules/${id}`);
-      const schedule = await response.json();
-
-      document.getElementById('editScheduleRoute').value = schedule.route;
-      document.getElementById('editScheduleTime').value = schedule.time;
-
-      document.getElementById('updateScheduleButton').onclick = async () => {
-        const updatedSchedule = {
-          route: document.getElementById('editScheduleRoute').value,
-          time: document.getElementById('editScheduleTime').value,
-        };
-
-        const updateResponse = await fetch(`/api/schedules/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedSchedule),
-        });
-
-        if (updateResponse.ok) {
-          alert('Schedule updated!');
-          fetchSchedules();
-        } else {
-          alert('Failed to update schedule');
-        }
-      };
-    }
-
-    async function deleteSchedule(id) {
-      if (!confirm('Are you sure?')) return;
-
-      const response = await fetch(`/api/schedules/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        alert('Schedule deleted!');
-        fetchSchedules();
-      } else {
-        alert('Failed to delete schedule');
-      }
-    } */
-    // Fetch schedules on page load
-    fetchSchedules();
-  </script>
+  <!-- Edit Schedule Modal -->
+  <div id="editScheduleModal" class="modal">
+    <div class="modal-content">
+      <div class="window-controls">
+        <button class="window-control minimize" onclick="minimizeModal('editScheduleModal')">─</button>
+        <button class="window-control maximize" onclick="maximizeModal('editScheduleModal')">□</button>
+        <button class="window-control close-btn" onclick="closeEditModal()">×</button>
+      </div>
+      <h2>Edit Schedule</h2>
+      <form id="editScheduleForm">
+        <div class="form-group">
+          <label for="editScheduleRoute">Route:</label>
+          <input type="text" id="editScheduleRoute" required>
+        </div>
+        <div class="form-group">
+          <label for="editScheduleDeparture">Departure:</label>
+          <input type="datetime-local" id="editScheduleDeparture" required>
+        </div>
+        <div class="form-group">
+          <label for="editScheduleSeats">Seats Available:</label>
+          <input type="number" id="editScheduleSeats" required>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="save-btn">Save Changes</button>
+          <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

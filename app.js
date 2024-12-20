@@ -6,7 +6,7 @@ const fs = require('fs');
 const cors = require('cors');
 
 // Routes
-const ridesRouter = require('./view/admin/api/rides._editor');
+const ridesRouter = require('./view/admin/api/ride_editor');
 const scheduleRouter = require('./view/admin/api/schedule');
 const usersRouter = require('./view/admin/api/users');
 const blacklistRouter = require('./view/admin/api/blacklist');
@@ -102,6 +102,33 @@ app.post('/api/rides/update-image', upload.single('image'), async (req, res) => 
       error: 'Failed to handle image',
       details: error.message 
     });
+  }
+});
+
+// Update the rides endpoint
+app.get('/api/rides', (req, res) => {
+  try {
+    // Send the sample data
+    const sampleRides = [
+      {
+        ride_id: 1,
+        plate_number: "ABC123",
+        route: "Bakakeng - Main",
+        departure: "2024-12-19 01:40:38",
+        seats_available: 23
+      },
+      {
+        ride_id: 2,
+        plate_number: "XYZ789",
+        route: "Military Cut-off - Main",
+        departure: "2024-12-19 02:30:00",
+        seats_available: 15
+      }
+    ];
+    res.json(sampleRides);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

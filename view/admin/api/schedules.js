@@ -1,4 +1,3 @@
-// view/admin/api/schedule.js
 const express = require('express');
 const router = express.Router();
 const db = require('./db');
@@ -44,10 +43,14 @@ router.put('/schedules/:id', async (req, res) => {
     const { route, departure, seats_available } = req.body;
     const schedId = req.params.id;
 
-    await db.execute(
+    const [result] = await db.execute(
       'UPDATE schedules SET route = ?, departure = ?, seats_available = ? WHERE sched_id = ?',
       [route, departure, seats_available, schedId]
     );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Schedule not found' });
+    }
 
     res.json({
       success: true,
@@ -66,7 +69,11 @@ router.put('/schedules/:id', async (req, res) => {
 router.delete('/schedules/:id', async (req, res) => {
   try {
     const schedId = req.params.id;
-    await db.execute('DELETE FROM schedules WHERE sched_id = ?', [schedId]);
+    const [result] = await db.execute('DELETE FROM schedules WHERE sched_id = ?', [schedId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Schedule not found' });
+    }
 
     res.json({
       success: true,
@@ -81,4 +88,4 @@ router.delete('/schedules/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = router; 

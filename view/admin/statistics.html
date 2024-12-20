@@ -5,28 +5,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GoGora - Ride Statistics</title>
+  <title>GoGora - Statistics</title>
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">  
-  <script src="script.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
+  
   <style>
-    /* Statistics specific styles */
-    .chart-container {
-      margin: 20px 0;
-      padding: 15px;
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .stats-card {
+      background: white;
       border-radius: 8px;
-      background-color: #fff;
+      padding: 20px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .stats-controls {
-      position: absolute;
-      right: 10px;
-      top: 10px;
+    .stats-header {
       display: flex;
-      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .stats-title {
+      font-size: 1.2em;
+      color: #4285F4;
+      margin: 0;
+    }
+
+    .stats-period {
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    .stats-value {
+      font-size: 2em;
+      color: #34A853;
+      margin: 10px 0;
+    }
+
+    .stats-change {
+      color: #EA4335;
+      font-size: 0.9em;
+    }
+
+    .stats-change.positive {
+      color: #34A853;
+    }
+
+    .chart-container {
+      height: 200px;
+      margin-top: 15px;
+      border-top: 1px solid #eee;
+      padding-top: 15px;
     }
   </style>
 </head>
@@ -39,81 +76,105 @@
       <nav>
         <ul class="menu">
           <li><a href="index.html" class="menu-item"><i class="icon">🏠</i> Dashboard</a></li>
-          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a>
+          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a></li>
           <li><a href="account_manager.html" class="menu-item"><i class="icon">👥</i> Manage Accounts</a></li>
           <li><a href="statistics.html" class="menu-item"><i class="icon">📊</i> Statistics</a></li>
           <li><a href="blacklist.html" class="menu-item"><i class="icon">🚫</i> Blacklist Passengers</a></li>
         </ul>
       </nav>
     </aside>
+
     <main class="main-content">
-      <h1>Statistics</h1>
-      <table id="statisticsTable">
-        <thead>
-          <tr>
-            <th>Ride ID</th>
-            <th>Arrival Time</th>
-            <th>Departure Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Ride statistics will go here -->
-        </tbody>
-      </table>
-      <button onclick="downloadStatistics()">Download Statistics</button>
+      <div class="title-section">
+        <h1>Statistics Overview</h1>
+      </div>
+
+      <div class="stats-container">
+        <!-- Revenue Statistics -->
+        <div class="stats-card">
+          <div class="stats-header">
+            <h3 class="stats-title">Total Revenue</h3>
+            <span class="stats-period">March 2024</span>
+          </div>
+          <div class="stats-value">₱45,750</div>
+          <div class="stats-change positive">+15% from last month</div>
+          <div class="stats-details">
+            <p>Daily Average: ₱1,525</p>
+            <p>Peak Day: March 15 (₱2,850)</p>
+          </div>
+        </div>
+
+        <!-- Ride Statistics -->
+        <div class="stats-card">
+          <div class="stats-header">
+            <h3 class="stats-title">Ride Analytics</h3>
+            <span class="stats-period">Last 7 Days</span>
+          </div>
+          <div class="stats-value">183 Rides</div>
+          <div class="stats-change positive">+8% from previous week</div>
+          <div class="stats-details">
+            <p>Most Popular Route: Bakakeng - Main</p>
+            <p>Average Occupancy: 85%</p>
+          </div>
+        </div>
+
+        <!-- User Statistics -->
+        <div class="stats-card">
+          <div class="stats-header">
+            <h3 class="stats-title">User Activity</h3>
+            <span class="stats-period">This Month</span>
+          </div>
+          <div class="stats-value">427 Active Users</div>
+          <div class="stats-change">-3% from last month</div>
+          <div class="stats-details">
+            <p>New Registrations: 45</p>
+            <p>Regular Users: 382</p>
+          </div>
+        </div>
+
+        <!-- Schedule Statistics -->
+        <div class="stats-card">
+          <div class="stats-header">
+            <h3 class="stats-title">Schedule Performance</h3>
+            <span class="stats-period">Current Week</span>
+          </div>
+          <div class="stats-value">95% On-Time</div>
+          <div class="stats-change positive">+2% improvement</div>
+          <div class="stats-details">
+            <p>Total Schedules: 75</p>
+            <p>Average Delay: 3 minutes</p>
+          </div>
+        </div>
+
+        <!-- Blacklist Statistics -->
+        <div class="stats-card">
+          <div class="stats-header">
+            <h3 class="stats-title">Blacklist Overview</h3>
+            <span class="stats-period">All Time</span>
+          </div>
+          <div class="stats-value">5 Active Cases</div>
+          <div class="stats-change">+2 this month</div>
+          <div class="stats-details">
+            <p>Most Common Reason: Late Payment</p>
+            <p>Reinstated Users: 2</p>
+          </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="stats-card">
+          <div class="stats-header">
+            <h3 class="stats-title">System Health</h3>
+            <span class="stats-period">Real-time</span>
+          </div>
+          <div class="stats-value">99.9% Uptime</div>
+          <div class="stats-change positive">Normal Operation</div>
+          <div class="stats-details">
+            <p>Response Time: 0.3s</p>
+            <p>Active Sessions: 47</p>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
-  <script>
-    // Fetch statistics and display them
-    fetch('/stats')
-      .then(response => response.json())
-      .then(stats => {
-        const tableBody = document.querySelector('#statisticsTable tbody');
-        stats.forEach(stat => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${stat.ride_id}</td>
-            <td>${stat.time_of_arrival}</td>
-            <td>${stat.time_of_departure}</td>
-          `;
-          tableBody.appendChild(row);
-        });
-      });
-
-      function downloadStatistics() {
-      // Fetch the statistics data from the server
-      fetch('/stats')
-        .then(response => response.json())
-        .then(stats => {
-          // Step 1: Convert the data to CSV format
-          const headers = ['Ride ID', 'Arrival Time', 'Departure Time'];
-          const rows = stats.map(stat => [stat.ride_id, stat.time_of_arrival, stat.time_of_departure]);
-          
-          // Combine headers and rows into a single CSV string
-          const csvContent = [headers, ...rows]
-            .map(row => row.join(',')) // Convert each row to comma-separated values
-            .join('\n'); // Combine all rows with a newline
-        
-          // Step 2: Create a Blob for the CSV data
-          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        
-          // Step 3: Create a temporary link element
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = 'statistics.csv'; // File name for the download
-        
-          // Step 4: Programmatically click the link to trigger download
-          link.click();
-        
-          // Cleanup: Remove the temporary object URL
-          URL.revokeObjectURL(link.href);
-        })
-        .catch(error => {
-          console.error('Error downloading statistics:', error);
-          alert('Failed to download statistics.');
-        });
-    }
-
-  </script>
 </body>
 </html>

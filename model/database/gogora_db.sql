@@ -28,11 +28,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `blacklist` (
-  `blacklist_id` int(11) NOT NULL,
+  `blacklist_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(10) NOT NULL,
   `blacklist_date` datetime NOT NULL,
   `blacklist_status` enum('Blacklisted','Reinstated') NOT NULL,
-  `reason` varchar(45) NOT NULL
+  `reason` varchar(45) NOT NULL,
+  PRIMARY KEY (`blacklist_id`),
+  UNIQUE KEY `username_UNIQUE` (`username`),
+  CONSTRAINT `user_name` FOREIGN KEY (`username`) REFERENCES `users` (`username`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -79,7 +82,9 @@ CREATE TABLE `rides` (
   `ride_type` enum('Jeepney','Service') NOT NULL,
   `departure` datetime NOT NULL,
   `capacity` int(11) NOT NULL,
-  `queue` int(11) NOT NULL
+  `queue` int(11) NOT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `image_blob` LONGBLOB DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -87,8 +92,13 @@ CREATE TABLE `rides` (
 --
 
 INSERT INTO `rides` (`ride_id`, `plate_number`, `route`, `time`, `seats_available`, `ride_type`, `departure`, `capacity`, `queue`) VALUES
-(1, 'abc123', 'Bakakeng to Igorot Park', '2024-12-16 08:30:00', 21, 'Jeepney', '2024-12-15 08:50:00', 21, 1),
-(2, 'abc456', 'Igorot Park to Bakakeng', '2024-12-16 09:30:00', 22, 'Jeepney', '2024-12-15 09:50:00', 24, 1);
+(1, 'ABC123', 'Bakakeng - Main', '2024-12-18 01:30:38', 23, 'Jeepney', '2024-12-19 01:40:38', 23, 0, NULL),
+(2, 'ABC124', 'Main - Bakakeng', '2024-12-19 02:00:00', 23, 'Jeepney', '2024-12-19 02:10:00', 23, 0, NULL),
+(3, 'ABC125', 'Mansion - Igorot Park', '2024-12-19 04:30:00', 15, 'Service', '2024-12-19 04:40:00', 15, 0, NULL),
+(4, 'ABC126', 'Igorot Park - Bakakeng', '2024-12-19 06:00:00', 15, 'Service', '2024-12-19 06:10:00', 15, 0, NULL),
+(5, 'ABC128', 'Cathedral - Igorot Park', '2024-12-19 05:30:00', 23, 'Jeepney', '2024-12-19 05:40:00', 23, 0, NULL),
+(6, 'ABC127', 'Igorot Park - Bakakeng', '2024-12-19 05:50:00', 23, 'Jeepney', '2024-12-19 06:00:00', 23, 0, NULL),
+(7, 'CDE1', 'Igorot Park - Aquatics', '2024-12-14 09:10:00', 23, 'Jeepney', '2024-12-14 09:20:00', 23, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -134,6 +144,30 @@ INSERT INTO `users` (`user_id`, `username`, `firstname`, `lastname`, `password`,
 (4, 'jekka', 'Jekka', 'Hufalar', '$2y$10$oI.T8Ox4m.Je9YbuS9RsQeguuMBte6L/A8sKzXKHCfcQOgecPWKm2', 'jekka@gmail.com', 'Student', 'Regular', NULL),
 (5, 'mark', 'mark', 'galarce', '$2y$10$wMUqzROJi1hArxGexhURNujzZoBRupIxVo1pRkFzQxFdPJzDPj9q2', '123@gmail.com', 'Student', 'Regular', NULL),
 (10, 'jem', 'jem', 'niduaza', '$2y$10$9.hMHUDtjJIFlgq4hmL7n.Nda7McTeXkRqJDO7R3dWNnSY3JGqMqa', 'jemmanid@gmail.co', 'Student', 'Regular', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `schedules`
+--
+
+CREATE TABLE `schedules` (
+  `sched_id` int(11) NOT NULL AUTO_INCREMENT,
+  `ride_id` int(11) NOT NULL,
+  `route` varchar(45) NOT NULL,
+  `departure` datetime NOT NULL,
+  `seats_available` int(11) NOT NULL,
+  PRIMARY KEY (`sched_id`),
+  KEY `ride_id` (`ride_id`),
+  CONSTRAINT `schedule_ride_id` FOREIGN KEY (`ride_id`) REFERENCES `rides` (`ride_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `schedules` (`ride_id`, `route`, `departure`, `seats_available`) VALUES
+(1, 'Bakakeng - Main', '2024-12-19 07:00:00', 23),
+(2, 'Main - Bakakeng', '2024-12-19 08:30:00', 23),
+(3, 'Mansion - Igorot Park', '2024-12-19 09:00:00', 15),
+(4, 'Igorot Park - Bakakeng', '2024-12-19 10:30:00', 15),
+(5, 'Cathedral - Igorot Park', '2024-12-19 11:00:00', 23);
 
 --
 -- Indexes for dumped tables
@@ -232,3 +266,9 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- Add sample blacklist data
+INSERT INTO `blacklist` (`username`, `blacklist_date`, `blacklist_status`, `reason`) VALUES
+('jekka', '2024-12-18 09:00:00', 'Blacklisted', 'Did not pay on time'),
+('mark', '2024-12-18 10:30:00', 'Blacklisted', 'Frequent cancellations'),
+('jem', '2024-12-18 11:45:00', 'Reinstated', 'Mass bookings');
