@@ -20,17 +20,17 @@ router.get('/', async (req, res) => {
 
 // Route to add a new schedule
 router.post('/', async (req, res) => {
-  const { ride_id, route, departure, seats_available } = req.body;
+  const { route, departure, seats_available } = req.body;
 
   // Validate the incoming data
-  if (!ride_id || !route || !departure || !seats_available) {
+  if  (!route || !departure || !seats_available) {
     return res.status(400).json({ error: 'Route, Departure, and Seats Available are required' });
   }
 
   try {
     // Query to insert a new schedule into the database
-    const query = 'INSERT INTO schedule (ride_id, route, departure, seats_available) VALUES (?, ?, ?, ?)';
-    const [result] = await db.query(query, [ride_id, route, departure, seats_available]);
+    const query = 'INSERT INTO schedule ( route, departure, seats_available) VALUES ( ?, ?, ?)';
+    const [result] = await db.query(query, [route, departure, seats_available]);
 
     console.log(result);
     

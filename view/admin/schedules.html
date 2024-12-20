@@ -113,9 +113,6 @@
           <h3>Add a New Schedule</h3>
           <form id="addScheduleForm">
 
-            <label for="schedRideId">Ride Id:</label>
-            <input type="text" id="schedRideId" placeholder="Ride Id:" required>
-
             <label for="scheduleRoute">Route:</label>
             <input type="text" id="scheduleRoute" placeholder="Route" required>
 
@@ -175,7 +172,6 @@
       schedulesTable.innerHTML = schedules.map(schedule => `
         <tr class="schedule-item" data-schedule-id="${schedule.sched_id}">
           <td>${schedule.sched_id}</td>
-          <td>${schedule.ride_id}</td>
           <td>${schedule.route}</td>
           <td>${schedule.departure}</td>
           <td>${schedule.seats_available}</td>
@@ -189,7 +185,6 @@
   async function addSchedule(event) {
   event.preventDefault(); // Prevent page reload on form submission
 
-  const rideId = parseInt(document.getElementById('schedRideId').value, 10);
   const route = document.getElementById('scheduleRoute').value;
   const departure = document.getElementById('scheduleDeparture').value;
   const seatsAvailable = parseInt(document.getElementById('scheduleSeats').value, 10);
@@ -201,7 +196,7 @@
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ride_id: rideId, route, departure, seats_available: seatsAvailable }),
+      body: JSON.stringify({ route, departure, seats_available: seatsAvailable }),
     });
 
     console.log(rideId);
