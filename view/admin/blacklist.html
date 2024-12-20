@@ -9,7 +9,32 @@
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">   
-  <script src="/api/blacklist_manager.js" defer></script>
+  <script src="script.js" defer></script>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <style>
+    /* Blacklist specific styles */
+    .blacklist-controls {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .blacklist-modal-content.minimized {
+      transform: scale(0.7);
+      width: 70%;
+      margin-top: 80vh;
+      opacity: 0.8;
+    }
+
+    .blacklist-modal-content.maximized {
+      width: 95vw;
+      max-width: none;
+      height: 90vh;
+      margin: 5vh auto;
+    }
+  </style>
 </head>
 <body>
   <div class="dashboard">

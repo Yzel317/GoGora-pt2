@@ -1,80 +1,65 @@
-//Author: Justine Lucas
+// view/admin/api/rides.js
 const express = require('express');
-const bodyParser = require('body-parser');
-const mysql = require('mysql');
+const router = express.Router();
+const mysql = require('mysql2/promise');
 
-const app = express();
-const port = 3000;
-
-// Middleware
-app.use(bodyParser.json());
-
-// Database connection
-const db = mysql.createConnection({
+// Create the connection pool
+const pool = mysql.createPool({
   host: 'localhost',
-  user: 'your_db_username',
-  password: 'your_db_password',
-  database: 'your_database_name',
+  user: 'root',  // your MySQL username
+  password: '',  // your MySQL password
+  database: 'gogora_db',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error('Database connection failed:', err.stack);
-    return;
+// Route to fetch all rides
+router.get('/', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM rides');
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'No rides found' });
+    }
+    res.json(rows);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Failed to fetch rides' });
   }
-  console.log('Connected to database');
 });
 
-// API Endpoints
+// Add this PUT route to handle updates
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { plate_number, route, departure, seats_available } = req.body;
+    
+    console.log('Received update request for ride:', id);
+    console.log('Update data:', req.body);
+    
+    const updateQuery = 'UPDATE rides SET plate_number = ?, route = ?, departure = ?, seats_available = ? WHERE ride_id = ?';
+    const values = [plate_number, route, departure, seats_available, id];
+    
+    console.log('Executing query:', updateQuery);
+    console.log('With values:', values);
 
-// GET all rides
-app.get('/api/rides', (req, res) => {
-  db.query('SELECT * FROM rides', (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+    const [result] = await pool.query(updateQuery, values);
+    console.log('Update result:', result);
+
+    if (result.affectedRows === 0) {
+      console.log('No ride found with ID:', id);
+      return res.status(404).json({ error: 'Ride not found' });
     }
-    res.json(results);
-  });
+
+    // Fetch the updated ride
+    const [updatedRide] = await pool.query('SELECT * FROM rides WHERE ride_id = ?', [id]);
+    console.log('Updated ride data:', updatedRide[0]);
+    
+    res.json(updatedRide[0]);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Failed to update ride: ' + error.message });
+  }
 });
 
-// POST a new ride
-app.post('/api/rides', (req, res) => {
-  const { plate_number, type_of_ride, seating_capacity, route, schedule } = req.body;
-  const query = 'INSERT INTO rides (plate_number, driver, seats_available, route, departure) VALUES (?, ?, ?, ?, ?)';
-  db.query(query, [plate_number, type_of_ride, seating_capacity, route, schedule], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json({ success: true, insertId: result.insertId });
-  });
-});
-
-// PUT (update) a ride
-app.put('/api/rides/:id', (req, res) => {
-  const rideId = req.params.id;
-  const { plate_number, type_of_ride, seating_capacity, route, schedule } = req.body;
-  const query = 'UPDATE rides SET plate_number = ?, driver = ?, seats_available = ?, route = ?, departure = ? WHERE ride_id = ?';
-  db.query(query, [plate_number, type_of_ride, seating_capacity, route, schedule, rideId], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json({ success: true, affectedRows: result.affectedRows });
-  });
-});
-
-// DELETE a ride
-app.delete('/api/rides/:id', (req, res) => {
-  const rideId = req.params.id;
-  const query = 'DELETE FROM rides WHERE ride_id = ?';
-  db.query(query, [rideId], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json({ success: true, affectedRows: result.affectedRows });
-  });
-});
-
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+module.exports = router;

@@ -3,7 +3,11 @@ const path = require('path');
 const app = express();
 
 // Routes
+<<<<<<< Updated upstream
 const ridesRouter = require('./view/admin/api/rides'); 
+=======
+const ridesRouter = require('./view/admin/api/rides._editor');
+>>>>>>> Stashed changes
 const scheduleRouter = require('./view/admin/api/schedule');
 const usersRouter = require('./view/admin/api/users');
 const blacklistRouter = require('./view/admin/api/blacklist');
@@ -22,11 +26,25 @@ app.use('/js', express.static(path.join(__dirname, 'view/admin/api'))); // Serve
 // Serve static files (e.g., uploaded images)
 app.use('/model/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Serve static files from the 'static' directory
+app.use('/static', express.static('static'));
+
 // Routes setup
 app.use('/api/rides', ridesRouter);
 app.use('/api/schedule', scheduleRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/blacklist', blacklistRouter);
+
+// Add CORS middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // Default route for catching any unhandled requests
 app.use((req, res) => {

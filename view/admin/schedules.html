@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="script.js" defer></script>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
   <style>
     /* Button alignment */
     .title-section {
@@ -46,6 +47,32 @@
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
+        tr:hover {
+            background-color: #ddd;
+        }
+
+    /* Schedule specific styles */
+    .schedule-controls {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .schedule-modal-content.minimized {
+      transform: scale(0.7);
+      width: 70%;
+      margin-top: 80vh;
+      opacity: 0.8;
+    }
+
+    .schedule-modal-content.maximized {
+      width: 95vw;
+      max-width: none;
+      height: 90vh;
+      margin: 5vh auto;
+    }
   </style>
 </head>
 <body>

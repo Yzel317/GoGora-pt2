@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
   <script src="/api/rides.js" defer></script>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
 
   <style>
     .title-section {
@@ -71,7 +72,16 @@
     .search-filters button {
       padding: 5px 10px;
       cursor: pointer;
-    }
+      background-color: #FBBC05;
+      color: #000000;
+  }
+
+  .search-filters button:hover {
+      padding: 5px 10px;
+      cursor: pointer;
+      background-color: #473703;
+      color: #ffffff;
+  }
 
     /* Add styling to ensure visibility of headers */
     .header p {
@@ -104,16 +114,21 @@
       </div>
 
       <div class="search-filters">
+        <h3> Search:</h3>
         <input type="text" id="searchInput" placeholder="Search Rides" oninput="filterRides()">
+        <h3> Ride ID:</h3>
         <select id="filterPlateNumber">
           <option value="">Filter by Ride ID</option>
         </select>
+          <h3> Route:</h3>
         <select id="filterRoute">
           <option value="">Filter by Route</option>
         </select>
+          <h3> Departure:</h3>
         <select id="filterDeparture">
           <option value="">Filter by Departure</option>
         </select>
+        <h3> Available Seats: </h3>
         <select id="filterSeatsAvailable">
           <option value="">Filter by Seats Available</option>
         </select>
@@ -123,16 +138,16 @@
 
       <div class="rides-section">
         <h2>Rides</h2>
+        <div class="ride-item header">
+          <p>Ride ID</p>
+          <p>Plate Number</p>
+          <p>Image</p>
+          <p>Route</p>
+          <p>Departure</p>
+          <p>Seats Available</p>
+        </div>
         <div id="rides-container">
           <!-- Ride header -->
-          <div class="ride-item header">
-            <p>Ride ID</p>
-            <p>Plate Number</p>
-            <p>Image</p>
-            <p>Route</p>
-            <p>Departure</p>
-            <p>Seats Available</p>
-          </div>
           <!-- Ride items will be populated dynamically here -->
         </div>
       </div>
