@@ -6,6 +6,7 @@ const app = express();
 const ridesRouter = require('./view/admin/api/rides'); 
 const scheduleRouter = require('./view/admin/api/schedule');
 const usersRouter = require('./view/admin/api/users');
+const blacklistRouter = require('./view/admin/api/blacklist');
 
 // Middleware
 app.use(express.json());
@@ -16,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'view/admin'))); // Serve index.html, admin.css, etc.
 
 // Serve static files from the 'view/admin/api' directory for API JS
-app.use('/api', express.static(path.join(__dirname, 'view/admin/api'))); // Serve script.js
+app.use('/js', express.static(path.join(__dirname, 'view/admin/api'))); // Serve script.js
 
 // Serve static files (e.g., uploaded images)
 app.use('/model/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -25,6 +26,7 @@ app.use('/model/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/rides', ridesRouter);
 app.use('/api/schedule', scheduleRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/blacklist', blacklistRouter);
 
 // Default route for catching any unhandled requests
 app.use((req, res) => {

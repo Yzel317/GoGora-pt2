@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">   
-  <script src="script.js" defer></script>
+  <script src="/api/blacklist_manager.js" defer></script>
 </head>
 <body>
   <div class="dashboard">
@@ -29,55 +29,121 @@
     </aside>
     <main class="main-content">
       <h1>Blacklist Management</h1>
-      <table id="blacklistTable">
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- List of blacklisted users will go here -->
-        </tbody>
-      </table>
+      
+      <!-- Search and Filter Section -->
+      <div class="search-filters">
+        <div class="filter-group">
+          <label for="searchInput">Search:</label>
+          <input type="text" id="searchInput" placeholder="Search by name">
+        </div>
+        <div class="filter-group">
+          <label for="filterStatus">Status:</label>
+          <select id="filterStatus">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="cleared">Cleared</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filterReason">Reason:</label>
+          <select id="filterReason">
+            <option value="">All Reasons</option>
+            <option value="0001">Did not pay on time</option>
+            <option value="0002">Frequent cancellations</option>
+            <option value="0003">Mass bookings</option>
+          </select>
+        </div>
+        <div class="filter-buttons">
+          <button onclick="applyFilters()">Apply</button>
+          <button onclick="clearFilters()">Clear All</button>
+        </div>
+      </div>
+
+      <!-- Add to Blacklist Button -->
+      <div class="action-bar">
+        <button class="add-button" onclick="openAddBlacklistModal()">+ Add to Blacklist</button>
+      </div>
+
+      <!-- Blacklist Table -->
+      <div class="table-wrapper rides-section">
+        <table id="blacklistTable">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Reason</th>
+              <th>Notes</th>
+              <th>Status</th>
+              <th>Date Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
     </main>
   </div>
-  <script>
-    // Fetch blacklisted users and display them
-    fetch('/routes/blacklist')
-      .then(response => response.json())
-      .then(users => {
-        const tableBody = document.querySelector('#blacklistTable tbody');
-        users.forEach(user => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${user.username}</td>
-            <td>${user.reason}</td>
-            <td>${user.blacklist_status}</td>
-            <td>
-              <button onclick="updateBlacklistStatus(${user.blacklist_id}, 'approved')">Approve</button>
-              <button onclick="updateBlacklistStatus(${user.blacklist_id}, 'rejected')">Reject</button>
-            </td>
-          `;
-          tableBody.appendChild(row);
-        });
-      });
 
-    function updateBlacklistStatus(id, status) {
-      fetch(`/routes/blacklist/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify({ status }),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message);
-        location.reload(); // Reload the page to reflect status change
-      });
-    }
-  </script>
+  <!-- Add to Blacklist Modal -->
+  <div id="addBlacklistModal" class="modal">
+    <div class="modal-content">
+      <h2>Add to Blacklist</h2>
+      <form id="addBlacklistForm">
+        <div class="form-group">
+          <label for="userId">Select User:</label>
+          <select id="userId" required>
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reasonId">Reason:</label>
+          <select id="reasonId" required>
+            <option value="0001">Did not pay on time</option>
+            <option value="0002">Frequent cancellations</option>
+            <option value="0003">Mass bookings</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="notes">Additional Notes:</label>
+          <textarea id="notes" rows="3"></textarea>
+        </div>
+        <div class="button-group">
+          <button type="submit">Add to Blacklist</button>
+          <button type="button" onclick="closeAddBlacklistModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update Status Modal -->
+  <div id="updateStatusModal" class="modal">
+    <div class="modal-content">
+      <h2>Update Status</h2>
+      <form id="updateStatusForm">
+        <input type="hidden" id="updateBlacklistId">
+        <div class="form-group">
+          <label for="updateStatus">Status:</label>
+          <select id="updateStatus" required>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="cleared">Cleared</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="updateNotes">Notes:</label>
+          <textarea id="updateNotes" rows="3"></textarea>
+        </div>
+        <div class="button-group">
+          <button type="submit">Update</button>
+          <button type="button" onclick="closeUpdateStatusModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
 
