@@ -188,6 +188,78 @@
       background-color: #0A3981;
     }
 
+    /* Add these styles */
+    .delete-mode .edit-btn {
+      display: none;
+    }
+
+    .delete-mode .ride-item {
+      background-color: rgba(199, 52, 33, 0.1);
+    }
+
+    .delete-instructions {
+      margin: 15px 0;
+      color: #666;
+    }
+
+    #confirmDeleteModal .modal-content,
+    #successModal .modal-content {
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .modal-content h3 {
+      margin-top: 20px;
+    }
+
+    /* Style for checkboxes */
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      position: relative;
+      width: 80%;
+      max-width: 800px;
+    }
+
+    /* Make sure checkboxes are visible */
+    input[type="checkbox"] {
+      margin: 0;
+      padding: 0;
+      visibility: visible;
+      display: inline-block;
+    }
+
+    /* Style for the delete mode table */
+    #delete-rides-container .ride-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #delete-rides-container .ride-item:hover {
+      background-color: rgba(199, 52, 33, 0.05);
+    }
+
   </style>
 </head>
 <body>
@@ -256,6 +328,52 @@
         </div>
         <div id="rides-container">
           <!-- Ride items will be populated dynamically here -->
+        </div>
+      </div>
+
+      <!-- Add this modal structure after your rides-section div -->
+      <div id="addRideModal" class="modal">
+        <div class="modal-content">
+          <div class="window-controls">
+            <button class="window-control minimize" title="Minimize" onclick="minimizeModal('addRideModal')">─</button>
+            <button class="window-control maximize" title="Maximize" onclick="maximizeModal('addRideModal')">□</button>
+            <button class="window-control close-btn" title="Close" onclick="closeAddRideModal()">×</button>
+          </div>
+          <h2>Add New Ride</h2>
+          <form id="addRideForm">
+            <div class="form-group">
+              <label for="addPlateNumber">Plate Number</label>
+              <input type="text" id="addPlateNumber" name="plate_number" maxlength="6" required>
+            </div>
+
+            <div class="form-group">
+              <label for="addRoute">Route</label>
+              <input type="text" id="addRoute" name="route" required>
+            </div>
+
+            <div class="form-group">
+              <label for="addDeparture">Departure Time</label>
+              <input type="datetime-local" id="addDeparture" name="departure" required>
+            </div>
+
+            <div class="form-group">
+              <label for="addSeatsAvailable">Seats Available</label>
+              <input type="number" id="addSeatsAvailable" name="seats_available" min="1" required>
+            </div>
+
+            <div class="form-group">
+              <label for="addRideType">Ride Type</label>
+              <select id="addRideType" name="ride_type" required>
+                <option value="Jeepney">Jeepney</option>
+                <option value="Service">Service</option>
+              </select>
+            </div>
+
+            <div class="button-group">
+              <button type="submit" id="addRideButton">Add Ride</button>
+              <button type="button" onclick="closeAddRideModal()">Cancel</button>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -769,6 +887,127 @@
         selectButton.addEventListener('click', handleFileUpload);
       }
     });
+
+    // Update the toggleAddRideMode function
+    function toggleAddRideMode() {
+      document.getElementById('addRideModal').style.display = 'block';
+    }
+
+    // Add new modal control functions
+    function closeAddRideModal() {
+      const modal = document.getElementById('addRideModal');
+      const modalContent = modal.querySelector('.modal-content');
+      modalContent.classList.remove('minimized', 'maximized');
+      modal.style.display = 'none';
+      document.getElementById('addRideForm').reset();
+    }
+
+    // Add form submission handler
+    document.getElementById('addRideForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = {
+        plate_number: document.getElementById('addPlateNumber').value,
+        route: document.getElementById('addRoute').value,
+        departure: document.getElementById('addDeparture').value,
+        seats_available: document.getElementById('addSeatsAvailable').value,
+        ride_type: document.getElementById('addRideType').value
+      };
+
+      try {
+        const response = await fetch('/api/rides', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add ride');
+        }
+
+        // Show success message
+        alert('Ride added successfully!');
+        
+        // Close modal and refresh rides
+        closeAddRideModal();
+        fetchData();
+        
+      } catch (error) {
+        console.error('Error adding ride:', error);
+        alert('Failed to add ride: ' + error.message);
+      }
+    });
+
+    function toggleDeleteMode() {
+      const deleteModal = document.getElementById('deleteRideModal');
+      if (deleteModal) {
+        deleteModal.style.display = 'block';
+      }
+    }
+
+    function exitDeleteMode() {
+      const deleteModal = document.getElementById('deleteRideModal');
+      if (deleteModal) {
+        deleteModal.style.display = 'none';
+        // Clear any selected checkboxes
+        const checkboxes = document.querySelectorAll('input[name="rideSelect"]');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+        document.getElementById('selectAll').checked = false;
+        // Hide error message if it was showing
+        document.querySelector('.error-message').style.display = 'none';
+      }
+    }
+
+    function toggleSelectAll() {
+      const selectAllCheckbox = document.getElementById('selectAll');
+      const checkboxes = document.querySelectorAll('input[name="rideSelect"]');
+      checkboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
+    }
+
+    function confirmDelete() {
+      const selectedCheckboxes = document.querySelectorAll('input[name="rideSelect"]:checked');
+      if (selectedCheckboxes.length === 0) {
+        document.querySelector('.error-message').style.display = 'block';
+        return;
+      }
+      
+      const confirmModal = document.getElementById('confirmDeleteModal');
+      if (confirmModal) {
+        confirmModal.style.display = 'block';
+      }
+    }
+
+    function closeConfirmModal() {
+      const confirmModal = document.getElementById('confirmDeleteModal');
+      if (confirmModal) {
+        confirmModal.style.display = 'none';
+      }
+    }
+
+    function executeDelete() {
+      const selectedCheckboxes = document.querySelectorAll('input[name="rideSelect"]:checked');
+      const deletedCount = selectedCheckboxes.length;
+      
+      // Update the count in the success modal
+      document.getElementById('deletedCount').textContent = deletedCount;
+      
+      // Hide confirm modal and show success modal
+      closeConfirmModal();
+      const successModal = document.getElementById('successModal');
+      if (successModal) {
+        successModal.style.display = 'block';
+      }
+    }
+
+    function closeSuccessModal() {
+      const successModal = document.getElementById('successModal');
+      if (successModal) {
+        successModal.style.display = 'none';
+        exitDeleteMode(); // Return to normal mode
+      }
+    }
   </script>
 
   <div id="editModal" class="modal">
@@ -821,7 +1060,7 @@
       <div class="window-controls">
         <button class="window-control minimize" title="Minimize" onclick="minimizeModal('addRideModal')">─</button>
         <button class="window-control maximize" title="Maximize" onclick="maximizeModal('addRideModal')">□</button>
-        <button class="window-control close-btn" title="Close" onclick="closeAddModal()">×</button>
+        <button class="window-control close-btn" title="Close" onclick="closeAddRideModal()">×</button>
       </div>
       <h2>Add New Ride</h2>
       <!-- rest of the add ride form content -->
@@ -871,6 +1110,125 @@
       <div class="modal-buttons">
         <button id="selectButton" class="select-btn" disabled>Select</button>
         <button class="cancel-btn" onclick="closeUploadImageModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add this modal for delete mode -->
+  <div id="deleteRideModal" class="modal">
+    <div class="modal-content">
+      <div class="window-controls">
+        <button class="window-control minimize" title="Minimize" onclick="minimizeModal('deleteRideModal')">─</button>
+        <button class="window-control maximize" title="Maximize" onclick="maximizeModal('deleteRideModal')">□</button>
+        <button class="window-control close-btn" title="Close" onclick="exitDeleteMode()">×</button>
+      </div>
+      <h2>Delete Rides</h2>
+      <p class="delete-instructions">Select the rides you want to delete:</p>
+      
+      <!-- Example of how the rides list will look in delete mode -->
+      <div class="ride-item header">
+        <p><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></p>
+        <p>Ride ID</p>
+        <p>Plate Number</p>
+        <p>Route</p>
+        <p>Departure</p>
+        <p>Seats Available</p>
+      </div>
+      <div id="delete-rides-container">
+        <div class="ride-item">
+          <p><input type="checkbox" name="rideSelect" value="1"></p>
+          <p>1</p>
+          <p>ABC123</p>
+          <p>Bakakeng - Main</p>
+          <p>2024-12-19 01:40:38</p>
+          <p>23</p>
+        </div>
+        <div class="ride-item">
+          <p><input type="checkbox" name="rideSelect" value="2"></p>
+          <p>2</p>
+          <p>ABC124</p>
+          <p>Main - Bakakeng</p>
+          <p>2024-12-19 02:10:00</p>
+          <p>23</p>
+        </div>
+        <div class="ride-item">
+          <p><input type="checkbox" name="rideSelect" value="3"></p>
+          <p>3</p>
+          <p>ABC125</p>
+          <p>Bakakeng - Igorot Park</p>
+          <p>2024-12-19 04:40:00</p>
+          <p>15</p>
+        </div>
+        <div class="ride-item">
+          <p><input type="checkbox" name="rideSelect" value="4"></p>
+          <p>4</p>
+          <p>ABC126</p>
+          <p>Igorot Park - Bakakeng</p>
+          <p>2024-12-19 06:10:00</p>
+          <p>15</p>
+        </div>
+        <div class="ride-item">
+          <p><input type="checkbox" name="rideSelect" value="5"></p>
+          <p>5</p>
+          <p>ABC128</p>
+          <p>Bakakeng - Igorot Park</p>
+          <p>2024-12-19 05:40:00</p>
+          <p>23</p>
+        </div>
+        <div class="ride-item">
+          <p><input type="checkbox" name="rideSelect" value="6"></p>
+          <p>6</p>
+          <p>ABC127</p>
+          <p>Igorot Park - Bakakeng</p>
+          <p>2024-12-19 06:00:00</p>
+          <p>23</p>
+        </div>
+        <div class="ride-item">
+          <p><input type="checkbox" name="rideSelect" value="7"></p>
+          <p>7</p>
+          <p>CDE1</p>
+          <p>Igorot Park - Aquatics</p>
+          <p>2024-12-14 09:20:00</p>
+          <p>23</p>
+        </div>
+      </div>
+
+      <div class="error-message" style="display: none; color: #c73421; margin: 10px 0;">
+        Please select at least one ride to delete! 🥲
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="delete-btn" onclick="confirmDelete()">Delete Selected</button>
+        <button type="button" onclick="exitDeleteMode()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add confirmation modal -->
+  <div id="confirmDeleteModal" class="modal">
+    <div class="modal-content">
+      <div class="window-controls">
+        <button class="window-control close-btn" title="Close" onclick="closeConfirmModal()">×</button>
+      </div>
+      <h3>Confirm Deletion</h3>
+      <p>Are you sure you want to delete the selected rides?</p>
+      <div class="button-group">
+        <button type="button" onclick="executeDelete()">Yes</button>
+        <button type="button" onclick="closeConfirmModal()">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add success message modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <div class="window-controls">
+        <button class="window-control close-btn" title="Close" onclick="closeSuccessModal()">×</button>
+      </div>
+      <h3>Success!</h3>
+      <p>Deleted <span id="deletedCount">0</span> rows Successfully 🥲</p>
+      <div class="button-group">
+        <button type="button" onclick="closeSuccessModal()">OK</button>
       </div>
     </div>
   </div>

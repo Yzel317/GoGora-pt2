@@ -159,15 +159,16 @@
       </div>
       <div class="schedules-section">
         <h2>Schedules</h2>
+        <div class="schedule-item header">
+          <p>Schedule ID</p>
+          <p>Ride ID</p>
+          <p>Route</p>
+          <p>Departure</p>
+          <p>Seats Available</p>
+          <p>Status</p>
+        </div>
         <div id="schedules-container">
-          <!-- Schedule header -->
-          <div class="schedule-item header">
-            <p>Schedule ID</p>
-            <p>Route</p>
-            <p>Departure</p>
-            <p>Seats Available</p>
-          </div>
-          <!-- Schedule items will be populated dynamically here -->
+          <!-- Schedules will be populated here -->
         </div>
       </div>
     </main>
@@ -288,6 +289,158 @@
 
     // Fetch data when the page loads
     fetchData();
+
+    // Add this after your pretendRides array
+    const pretendSchedules = [
+      {
+        schedule_id: 'SCH001',
+        ride_id: 'RD105',
+        route: 'Cebu City ↔ Mandaue',
+        departure: '2024-03-20 08:00 AM',
+        seats_available: 15,
+        status: 'active'
+      },
+      {
+        schedule_id: 'SCH002',
+        ride_id: 'RD108',
+        route: 'Mandaue ↔ Lapu-Lapu',
+        departure: '2024-03-20 09:30 AM',
+        seats_available: 12,
+        status: 'active'
+      },
+      {
+        schedule_id: 'SCH003',
+        ride_id: 'RD112',
+        route: 'Cebu City ↔ Lapu-Lapu',
+        departure: '2024-03-20 10:00 AM',
+        seats_available: 8,
+        status: 'almost_full'
+      },
+      {
+        schedule_id: 'SCH004',
+        ride_id: 'RD115',
+        route: 'Cebu City ↔ Mandaue',
+        departure: '2024-03-20 11:30 AM',
+        seats_available: 20,
+        status: 'active'
+      },
+      {
+        schedule_id: 'SCH005',
+        ride_id: 'RD118',
+        route: 'Mandaue ↔ Lapu-Lapu',
+        departure: '2024-03-20 01:00 PM',
+        seats_available: 5,
+        status: 'almost_full'
+      }
+    ];
+
+    // Add this function to display schedules
+    function displaySchedules(schedules) {
+      const schedulesContainer = document.getElementById('schedules-container');
+      
+      if (!schedulesContainer) {
+        console.error('Schedules container not found!');
+        return;
+      }
+      
+      schedulesContainer.innerHTML = ''; // Clear the container
+
+      if (schedules.length === 0) {
+        schedulesContainer.innerHTML = `<p style="color: gray;">Sorry 🥲 There are no current schedules available with the information you are looking for 🥲</p>`;
+        return;
+      }
+
+      schedules.forEach(schedule => {
+        const scheduleItem = document.createElement('div');
+        scheduleItem.className = 'schedule-item';
+        scheduleItem.innerHTML = `
+          <p>${schedule.schedule_id}</p>
+          <p>${schedule.ride_id}</p>
+          <p>${schedule.route}</p>
+          <p>${schedule.departure}</p>
+          <p>${schedule.seats_available}</p>
+          <p class="status ${schedule.status === 'active' ? 'active' : 'full'}">
+            ${schedule.status === 'active' ? 'Active' : 'Almost Full'}
+          </p>
+        `;
+        schedulesContainer.appendChild(scheduleItem);
+      });
+    }
+
+    // Update the initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize rides
+      displayRides(pretendRides);
+      populateFilters(pretendRides);
+      
+      // Initialize schedules
+      console.log('Displaying schedules:', pretendSchedules); // Debug log
+      displaySchedules(pretendSchedules);
+    });
+
+    // Add schedule filtering function
+    function filterSchedules() {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const filteredSchedules = pretendSchedules.filter(schedule => {
+        return (
+          schedule.schedule_id.toLowerCase().includes(searchInput) ||
+          schedule.ride_id.toLowerCase().includes(searchInput) ||
+          schedule.route.toLowerCase().includes(searchInput) ||
+          schedule.departure.toLowerCase().includes(searchInput) ||
+          schedule.seats_available.toString().includes(searchInput)
+        );
+      });
+      displaySchedules(filteredSchedules);
+    }
+
+    // Update clearFilters to include schedules
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterPlateNumber').value = '';
+      document.getElementById('filterRoute').value = '';
+      document.getElementById('filterSeatsAvailable').value = '';
+      displayRides(pretendRides);
+      displaySchedules(pretendSchedules);
+    }
+
+    // Add schedule-specific styles
+    const styles = `
+      .schedule-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        margin: 10px 0;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .schedule-item p {
+        width: 16%;
+        text-align: center;
+        margin: 0;
+      }
+
+      .status.active {
+        background-color: #34A853;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+
+      .status.full {
+        background-color: #FBBC05;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+    `;
+
+    // Add the styles to the document
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
   </script>
 </body>
 </html>

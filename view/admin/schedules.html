@@ -1,4 +1,4 @@
-<!--Authors: John Gabriel Pampo, Justine Lucas-->>
+<!--Authors: John Gabriel Pampo, Justine Lucas-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,6 +73,112 @@
       height: 90vh;
       margin: 5vh auto;
     }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .add-schedule, .delete-schedule, .download-csv {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .add-schedule {
+      background-color: #34A853;
+      color: white;
+    }
+
+    .delete-schedule {
+      background-color: #EA4335;
+      color: white;
+    }
+
+    .download-csv {
+      background-color: #4285F4;
+      color: white;
+    }
+
+    .schedule-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .schedule-item p {
+      width: 16%;
+      text-align: center;
+      margin: 0;
+    }
+
+    .status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .status.active {
+      background-color: #34A853;
+      color: white;
+    }
+
+    .status.full {
+      background-color: #FBBC05;
+      color: white;
+    }
+
+    .search-filters {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .search-filters input,
+    .search-filters select {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .search-filters button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #4285F4;
+      color: white;
+    }
+
+    .search-filters button:last-child {
+      background-color: #666;
+    }
+
+    #schedules-container {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .header {
+      background-color: #f5f5f5;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
   </style>
 </head>
 <body>
@@ -92,216 +198,267 @@
       </nav>
     </aside>
     <main class="main-content">
-      <header>
+      <div class="title-section">
         <h1>Manage Schedules</h1>
-      </header>
+        <div class="action-buttons">
+          <button class="add-schedule" onclick="toggleAddScheduleMode()">Add Schedule</button>
+          <button class="delete-schedule" onclick="toggleDeleteMode()">Delete Schedule</button>
+          <button class="download-csv" onclick="downloadSchedulesCSV()">Download CSV</button>
+        </div>
+      </div>
+
+      <div class="search-filters">
+        <h3>Search:</h3>
+        <input type="text" id="searchInput" placeholder="Search Schedules" oninput="filterSchedules()">
+        <h3>Schedule ID:</h3>
+        <select id="filterScheduleId">
+          <option value="">Filter by Schedule ID</option>
+        </select>
+        <h3>Route:</h3>
+        <select id="filterRoute">
+          <option value="">Filter by Route</option>
+        </select>
+        <h3>Departure:</h3>
+        <select id="filterDeparture">
+          <option value="">Filter by Departure</option>
+        </select>
+        <h3>Available Seats:</h3>
+        <select id="filterSeatsAvailable">
+          <option value="">Filter by Seats</option>
+        </select>
+        <button onclick="applyFilters()">Apply</button>
+        <button onclick="clearFilters()">Clear All</button>
+      </div>
 
       <div class="schedules-section">
-        <!-- Add Schedule Form -->
-        <div class="title-section">
-          <h2>Schedules</h2>
-          <form id="addScheduleForm">
-            <!--  
-            <input type="text" id="scheduleRoute" placeholder="Route" required>
-            <input type="datetime-local" id="scheduleTime" required>
-            -->
-            <button type="button" id="addNewScheduleBtn">Add New Schedule</button>
-          </form>
+        <h2>Active Schedules</h2>
+        <div class="schedule-item header">
+          <p>Schedule ID</p>
+          <p>Ride ID</p>
+          <p>Route</p>
+          <p>Departure</p>
+          <p>Seats Available</p>
+          <p>Status</p>
         </div>
-
-        <div id="addScheduleUI" style="display: none;">
-          <h3>Add a New Schedule</h3>
-          <form id="addScheduleForm">
-
-            <label for="scheduleRoute">Route:</label>
-            <input type="text" id="scheduleRoute" placeholder="Route" required>
-
-            <label for="scheduleDeparture">Departure:</label>
-            <input type="text" id="scheduleDeparture" class="scheduleDate" placeholder="Departure" required>
-
-            <label for="scheduleSeats">Seats:</label>
-            <input type="text" id="scheduleSeats" placeholder="Seats" required>
-        
-            <button type="submit" id="addScheduleBtn">Add Schedule</button>
-          </form>
+        <div id="schedules-container">
+          <!-- Sample schedule data -->
+          <div class="schedule-item">
+            <p>SCH001</p>
+            <p>RD105</p>
+            <p>Cebu City ↔ Mandaue</p>
+            <p>2024-03-20 08:00 AM</p>
+            <p>15</p>
+            <p class="status active">Active</p>
+          </div>
+          <div class="schedule-item">
+            <p>SCH002</p>
+            <p>RD108</p>
+            <p>Mandaue ↔ Lapu-Lapu</p>
+            <p>2024-03-20 09:30 AM</p>
+            <p>12</p>
+            <p class="status active">Active</p>
+          </div>
+          <div class="schedule-item">
+            <p>SCH003</p>
+            <p>RD112</p>
+            <p>Cebu City ↔ Lapu-Lapu</p>
+            <p>2024-03-20 10:00 AM</p>
+            <p>8</p>
+            <p class="status full">Almost Full</p>
+          </div>
+          <div class="schedule-item">
+            <p>SCH004</p>
+            <p>RD115</p>
+            <p>Cebu City ↔ Mandaue</p>
+            <p>2024-03-20 11:30 AM</p>
+            <p>20</p>
+            <p class="status active">Active</p>
+          </div>
+          <div class="schedule-item">
+            <p>SCH005</p>
+            <p>RD118</p>
+            <p>Mandaue ↔ Lapu-Lapu</p>
+            <p>2024-03-20 01:00 PM</p>
+            <p>5</p>
+            <p class="status full">Almost Full</p>
+          </div>
         </div>
-
-        <!-- Schedule List -->
-
-      <div id="schedulesTableDiv">
-        <table id = "scheduleTableHeader">
-          <tr>
-            <th>Schedule ID</th>
-            <th>Ride ID</th>
-            <th>Route</th>
-            <th>Departure</th>
-            <th>Seats Available</th>
-          </tr>
-        </table>
-        <table id = "schedulesTable">
-          <tr>
-            <th>Schedule ID</th>
-            <th>Ride ID</th>
-            <th>Route</th>
-            <th>Departure</th>
-            <th>Seats Available</th>
-          </tr>
-        </table>
-      </div>
-
-      </div>
-
-      <!-- Edit Schedule Modal -->
-      <div id="editScheduleModal" style="display: none;">
-        <h3>Edit Schedule</h3>
-        <form id="editScheduleForm">
-          <input type="text" id="editScheduleRoute" placeholder="Route" required>
-          <input type="datetime-local" id="editScheduleTime" required>
-          <button type="button" id="updateScheduleButton">Update Schedule</button>
-        </form>
       </div>
     </main>
   </div>
 
   <script>
-  async function fetchSchedules() {
-      const response = await fetch('/api/schedule');
-      const schedules = await response.json();
-      const schedulesTable = document.getElementById('schedulesTable');
+  // Pretend schedule data array
+  const pretendSchedules = [
+    {
+      schedule_id: 'SCH001',
+      ride_id: 'RD105',
+      route: 'Cebu City ↔ Mandaue',
+      departure: '2024-03-20 08:00 AM',
+      seats_available: 15,
+      status: 'active'
+    },
+    {
+      schedule_id: 'SCH002',
+      ride_id: 'RD108',
+      route: 'Mandaue ↔ Lapu-Lapu',
+      departure: '2024-03-20 09:30 AM',
+      seats_available: 12,
+      status: 'active'
+    },
+    {
+      schedule_id: 'SCH003',
+      ride_id: 'RD112',
+      route: 'Cebu City ↔ Lapu-Lapu',
+      departure: '2024-03-20 10:00 AM',
+      seats_available: 8,
+      status: 'almost_full'
+    },
+    {
+      schedule_id: 'SCH004',
+      ride_id: 'RD115',
+      route: 'Cebu City ↔ Mandaue',
+      departure: '2024-03-20 11:30 AM',
+      seats_available: 20,
+      status: 'active'
+    },
+    {
+      schedule_id: 'SCH005',
+      ride_id: 'RD118',
+      route: 'Mandaue ↔ Lapu-Lapu',
+      departure: '2024-03-20 01:00 PM',
+      seats_available: 5,
+      status: 'almost_full'
+    }
+  ];
 
-      schedulesTable.innerHTML = schedules.map(schedule => `
-        <tr class="schedule-item" data-schedule-id="${schedule.sched_id}">
-          <td>${schedule.sched_id}</td>
-          <td>${schedule.route}</td>
-          <td>${schedule.departure}</td>
-          <td>${schedule.seats_available}</td>
-          <td><button onclick="deleteSchedule(${schedule.sched_id})">Delete</button></td>
-        </tr>
-      `).join('');
+  // Function to display schedules
+  function displaySchedules(schedules) {
+    const schedulesContainer = document.getElementById('schedules-container');
+    schedulesContainer.innerHTML = ''; // Clear the container
+
+    if (schedules.length === 0) {
+      schedulesContainer.innerHTML = `<p style="color: gray;">Sorry 🥲 There are no current schedules available with the information you are looking for 🥲</p>`;
+      return;
     }
 
+    schedules.forEach(schedule => {
+      const scheduleItem = document.createElement('div');
+      scheduleItem.className = 'schedule-item';
+      scheduleItem.innerHTML = `
+        <p>${schedule.schedule_id}</p>
+        <p>${schedule.ride_id}</p>
+        <p>${schedule.route}</p>
+        <p>${schedule.departure}</p>
+        <p>${schedule.seats_available}</p>
+        <p class="status ${schedule.status === 'active' ? 'active' : 'full'}">
+          ${schedule.status === 'active' ? 'Active' : 'Almost Full'}
+        </p>
+      `;
+      schedulesContainer.appendChild(scheduleItem);
+    });
+  }
 
+  // Function to populate filters
+  function populateFilters(schedules) {
+    const scheduleIds = [...new Set(schedules.map(schedule => schedule.schedule_id))];
+    const routes = [...new Set(schedules.map(schedule => schedule.route))];
+    const departures = [...new Set(schedules.map(schedule => schedule.departure))];
+    const seatsAvailable = [...new Set(schedules.map(schedule => schedule.seats_available.toString()))];
 
-  async function addSchedule(event) {
-  event.preventDefault(); // Prevent page reload on form submission
+    populateDropdown('filterScheduleId', scheduleIds);
+    populateDropdown('filterRoute', routes);
+    populateDropdown('filterDeparture', departures);
+    populateDropdown('filterSeatsAvailable', seatsAvailable);
+  }
 
-  const route = document.getElementById('scheduleRoute').value;
-  const departure = document.getElementById('scheduleDeparture').value;
-  const seatsAvailable = parseInt(document.getElementById('scheduleSeats').value, 10);
+  // Helper function to populate dropdown options
+  function populateDropdown(selectId, options) {
+    const select = document.getElementById(selectId);
+    select.innerHTML = '<option value="">All</option>';
+    options.forEach(option => {
+      const optionElement = document.createElement('option');
+      optionElement.value = option;
+      optionElement.textContent = option;
+      select.appendChild(optionElement);
+    });
+  }
 
-  console.log(rideId);
-  try {
-    const response = await fetch('/api/schedule', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ route, departure, seats_available: seatsAvailable }),
+  // Filter schedules based on search input
+  function filterSchedules() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const filteredSchedules = pretendSchedules.filter(schedule => {
+      return (
+        schedule.schedule_id.toLowerCase().includes(searchInput) ||
+        schedule.ride_id.toLowerCase().includes(searchInput) ||
+        schedule.route.toLowerCase().includes(searchInput) ||
+        schedule.departure.toLowerCase().includes(searchInput) ||
+        schedule.seats_available.toString().includes(searchInput)
+      );
+    });
+    displaySchedules(filteredSchedules);
+  }
+
+  // Apply filters
+  function applyFilters() {
+    const scheduleId = document.getElementById('filterScheduleId').value;
+    const route = document.getElementById('filterRoute').value;
+    const departure = document.getElementById('filterDeparture').value;
+    const seatsAvailable = document.getElementById('filterSeatsAvailable').value;
+
+    const filteredSchedules = pretendSchedules.filter(schedule => {
+      return (
+        (scheduleId === "" || schedule.schedule_id === scheduleId) &&
+        (route === "" || schedule.route === route) &&
+        (departure === "" || schedule.departure === departure) &&
+        (seatsAvailable === "" || schedule.seats_available.toString() === seatsAvailable)
+      );
     });
 
-    console.log(rideId);
-
-    // Check if the response is JSON
-    const responseData = await response.json();
-
-    console.log(responseData);
-
-    if (response.ok) {
-      alert('Schedule added successfully!');
-      document.getElementById('addScheduleForm').reset(); // Clear the form
-      fetchSchedules(); // Reload the schedules
-    } else {
-      alert(`Error adding schedule: ${responseData.error}`);
-    }
-  } catch (error) {
-    console.error('Error adding schedule:', error);
-    alert('Failed to add schedule.');
+    displaySchedules(filteredSchedules);
   }
-}
 
-async function deleteSchedule(sched_id) {
-  if (!confirm('Are you sure you want to delete this schedule?')) return;
-
-  try {
-    const response = await fetch(`/api/schedule/${sched_id}`, {
-      method: 'DELETE',
-    });
-
-    const responseData = await response.json();
-
-    if (response.ok) {
-      alert('Schedule deleted successfully');
-      fetchSchedules(); // Refresh the schedule list
-    } else {
-      console.error('Delete failed:', responseData.error);
-      alert(`Error deleting schedule: ${responseData.error}`);
-    }
-  } catch (error) {
-    console.error('Error deleting schedule:', error);
-    alert('Failed to delete schedule.');
+  // Clear all filters
+  function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterScheduleId').value = '';
+    document.getElementById('filterRoute').value = '';
+    document.getElementById('filterDeparture').value = '';
+    document.getElementById('filterSeatsAvailable').value = '';
+    displaySchedules(pretendSchedules);
   }
-}
 
-// Bind event listener to the add schedule button
-document.getElementById('addScheduleBtn').addEventListener('click', addSchedule);
+  // Download CSV function
+  function downloadSchedulesCSV() {
+    const headers = ['Schedule ID', 'Ride ID', 'Route', 'Departure', 'Seats Available', 'Status'];
+    const csvContent = [
+      headers.join(','),
+      ...pretendSchedules.map(schedule => [
+        schedule.schedule_id,
+        schedule.ride_id,
+        schedule.route,
+        schedule.departure,
+        schedule.seats_available,
+        schedule.status
+      ].join(','))
+    ].join('\n');
 
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'schedules.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
 
-document.getElementById('addScheduleForm').addEventListener('click', () => {
-  const addScheduleUI = document.getElementById('addScheduleUI');
-    addScheduleUI.style.display = addScheduleUI.style.display === 'none' ? 'block' : 'none';
-});
-
-flatpickr('#scheduleDeparture', {
-    enableTime: true,         // Enables time selection
-    dateFormat: 'Y-m-d H:i',  // Sets date-time format (e.g., 2024-12-20 08:00)
-    minDate: 'today',         // Prevents selecting past dates
-});
-    
-/*
-    async function editSchedule(id) {
-      const response = await fetch(`/api/schedules/${id}`);
-      const schedule = await response.json();
-
-      document.getElementById('editScheduleRoute').value = schedule.route;
-      document.getElementById('editScheduleTime').value = schedule.time;
-
-      document.getElementById('updateScheduleButton').onclick = async () => {
-        const updatedSchedule = {
-          route: document.getElementById('editScheduleRoute').value,
-          time: document.getElementById('editScheduleTime').value,
-        };
-
-        const updateResponse = await fetch(`/api/schedules/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedSchedule),
-        });
-
-        if (updateResponse.ok) {
-          alert('Schedule updated!');
-          fetchSchedules();
-        } else {
-          alert('Failed to update schedule');
-        }
-      };
-    }
-
-    async function deleteSchedule(id) {
-      if (!confirm('Are you sure?')) return;
-
-      const response = await fetch(`/api/schedules/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        alert('Schedule deleted!');
-        fetchSchedules();
-      } else {
-        alert('Failed to delete schedule');
-      }
-    } */
-    // Fetch schedules on page load
-    fetchSchedules();
+  // Initialize the page
+  document.addEventListener('DOMContentLoaded', () => {
+    displaySchedules(pretendSchedules);
+    populateFilters(pretendSchedules);
+  });
   </script>
 </body>
 </html>

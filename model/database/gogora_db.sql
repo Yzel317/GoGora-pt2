@@ -87,9 +87,13 @@ CREATE TABLE `rides` (
 --
 
 INSERT INTO `rides` (`ride_id`, `plate_number`, `route`, `time`, `seats_available`, `ride_type`, `departure`, `capacity`, `queue`) VALUES
-(1, 'abc123', 'Bakakeng to Igorot Park', '2024-12-16 08:30:00', 21, 'Jeepney', '2024-12-15 08:50:00', 21, 1),
-(2, 'abc456', 'Igorot Park to Bakakeng', '2024-12-16 09:30:00', 22, 'Jeepney', '2024-12-15 09:50:00', 24, 1);
-
+(1, 'ABC123', 'Bakakeng - Main', '2024-12-18 01:30:38', 23, 'Jeepney', '2024-12-19 01:40:38', 23, 0),
+(2, 'ABC124', 'Main - Bakakeng', '2024-12-19 02:00:00', 23, 'Jeepney', '2024-12-19 02:10:00', 23, 0),
+(3, 'ABC125', 'Bakakeng - Igorot Park', '2024-12-19 04:30:00', 15, 'Service', '2024-12-19 04:40:00', 15, 0),
+(4, 'ABC126', 'Igorot Park - Bakakeng', '2024-12-19 06:00:00', 15, 'Service', '2024-12-19 06:10:00', 15, 0),
+(5, 'ABC128', 'Bakakeng - Igorot Park', '2024-12-19 05:30:00', 23, 'Jeepney', '2024-12-19 05:40:00', 23, 0),
+(6, 'ABC127', 'Igorot Park - Bakakeng', '2024-12-19 05:50:00', 23, 'Jeepney', '2024-12-19 06:00:00', 23, 0),
+(7, 'CDE1', 'Igorot Park - Aquatics', '2024-12-14 09:10:00', 23, 'Jeepney', '2024-12-14 09:20:00', 23, 0);
 -- --------------------------------------------------------
 
 --
@@ -134,6 +138,7 @@ INSERT INTO `users` (`user_id`, `username`, `firstname`, `lastname`, `password`,
 (4, 'jekka', 'Jekka', 'Hufalar', '$2y$10$oI.T8Ox4m.Je9YbuS9RsQeguuMBte6L/A8sKzXKHCfcQOgecPWKm2', 'jekka@gmail.com', 'Student', 'Regular', NULL),
 (5, 'mark', 'mark', 'galarce', '$2y$10$wMUqzROJi1hArxGexhURNujzZoBRupIxVo1pRkFzQxFdPJzDPj9q2', '123@gmail.com', 'Student', 'Regular', NULL),
 (10, 'jem', 'jem', 'niduaza', '$2y$10$9.hMHUDtjJIFlgq4hmL7n.Nda7McTeXkRqJDO7R3dWNnSY3JGqMqa', 'jemmanid@gmail.co', 'Student', 'Regular', NULL);
+(11, 'liiimint', 'liii', 'mint', '$2y$10$l6pVI0QhV1Fgz6dcxhLxJ.IfrqHRKyHqIhKV4N01Jh.5zJysoiAvm', 'liiimint@sample.email', 'Student', 'Regular', NULL);
 
 --
 -- Indexes for dumped tables
