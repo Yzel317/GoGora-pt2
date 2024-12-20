@@ -48,7 +48,7 @@
 
         <h1>Ride History</h1>
         <section class="ride-list" id="rideListContainer">
-            <p>Loading booking history...</p>
+            <p>No Booking History<p>
         </section>
     </div>
 </body>

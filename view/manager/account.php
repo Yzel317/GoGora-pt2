@@ -136,7 +136,7 @@ if (!$blacklistResult) {
                 <li><a href="../manager/reservations.php"><span class="icon">📝</span> Reservations</a></li>
             </ul>
             <div class="logout">
-                <a href="#"><span class="icon">🚪</span> Logout</a>
+                <a href="/view/manager/manage.php"><span class="icon">🚪</span> Logout</a>
             </div>
         </nav>
         <main class="content">
