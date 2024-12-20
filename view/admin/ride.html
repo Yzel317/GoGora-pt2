@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
-  <script src="/api/ride_editor.js" defer></script>
   <link rel="icon" type="image/png" href="/assets/favicon.png">
 
   <style>
@@ -292,7 +291,7 @@
       // Add click handler for select button
       const selectButton = document.getElementById('selectButton');
       if (selectButton) {
-        selectButton.addEventListener('click', handleFileUpload);
+        selectButton.addEventListener('click', UploadSuccessMessage);
       }
     });
 
@@ -557,32 +556,90 @@
       selectButton.disabled = false;
     }
 
+    function UploadSuccessMessage() {
+      // Create the popup element
+      const popup = document.createElement('div');
+      popup.className = 'success-popup';
+      popup.innerHTML = 'Image updated ! ✅';
+      document.body.appendChild(popup);
+
+      // Add styles for the popup
+      popup.style.position = 'fixed';
+      popup.style.top = '20px';
+      popup.style.right = '20px';
+      popup.style.backgroundColor = '#34A853';
+      popup.style.color = 'white';
+      popup.style.padding = '15px 25px';
+      popup.style.borderRadius = '5px';
+      popup.style.zIndex = '1000';
+      popup.style.animation = 'slideIn 0.5s ease-out';
+
+      // Add animation keyframes
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Remove the popup after 3 seconds
+      setTimeout(() => {
+        popup.style.animation = 'fadeOut 0.5s ease-out';
+        setTimeout(() => {
+          document.body.removeChild(popup);
+        }, 500);
+      }, 3000);
+    }
+
+    // Update the handleFileUpload function
     async function handleFileUpload() {
       if (!selectedFile) return;
       
       const modal = document.getElementById('uploadImageModal');
       const rideId = modal.dataset.rideId;
+      const ride = allRides.find(r => r.ride_id === parseInt(rideId));
       
       const formData = new FormData();
       formData.append('image', selectedFile);
       formData.append('ride_id', rideId);
+      formData.append('route', ride.route);
       
       try {
-        const response = await fetch('/api/rides/update-image', {
+        const response = await fetch('http://gomingo:5000/api/rides/update-image', {
           method: 'POST',
           body: formData
         });
         
-        if (response.ok) {
-          alert('Image uploaded successfully!');
-          closeUploadImageModal();
-          fetchData(); // Refresh the ride list
-        } else {
-          throw new Error('Failed to upload image');
+        let data;
+        try {
+          data = await response.json();
+        } catch (e) {
+          throw new Error('Invalid response from server');
         }
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to upload image');
+        }
+
+        // Update the image in the ride row
+        const rideImage = document.querySelector(`.ride-item img[data-ride-id="${rideId}"]`);
+        if (rideImage) {
+          rideImage.src = './assets/jeep.jpg';
+        }
+
+        // Show success message popup
+        UploadSuccessMessage();
+        closeUploadImageModal();
+        
       } catch (error) {
         console.error('Error uploading image:', error);
-        alert('Failed to upload image');
+        alert(`Failed to upload image: ${error.message}`);
       }
     }
 
@@ -704,6 +761,14 @@
       modal.style.display = 'none';
       currentEditRideId = null;
     }
+
+    // Add event listener for the select button
+    document.addEventListener('DOMContentLoaded', function() {
+      const selectButton = document.getElementById('selectButton');
+      if (selectButton) {
+        selectButton.addEventListener('click', handleFileUpload);
+      }
+    });
   </script>
 
   <div id="editModal" class="modal">

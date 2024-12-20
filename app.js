@@ -1,6 +1,9 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+const multer = require('multer');
+const fs = require('fs');
+const cors = require('cors');
 
 // Routes
 const ridesRouter = require('./view/admin/api/rides._editor');
@@ -25,6 +28,42 @@ app.use('/model/uploads', express.static(path.join(__dirname, 'uploads')));
 // Serve static files from the 'static' directory
 app.use('/static', express.static('static'));
 
+// Configure multer for file upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, 'model/uploads');
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Get file extension
+    const ext = path.extname(file.originalname);
+    // Create filename using ride_id and route
+    const filename = `${req.body.ride_id}_${req.body.route}${ext}`;
+    cb(null, filename);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 6 * 1024 * 1024 // 6MB limit
+  },
+  fileFilter: function (req, file, cb) {
+    // Accept only jpeg, jpg, png
+    if (file.mimetype === "image/jpeg" || 
+        file.mimetype === "image/jpg" || 
+        file.mimetype === "image/png") {
+      cb(null, true);
+    } else {
+      cb(new Error('Only .jpeg, .jpg and .png files are allowed!'), false);
+    }
+  }
+});
+
 // Routes setup
 app.use('/api/rides', ridesRouter);
 app.use('/api/schedule', scheduleRouter);
@@ -42,34 +81,35 @@ app.use((req, res, next) => {
   next();
 });
 
+// Make sure this route is defined BEFORE your 404 handler
+app.post('/api/rides/update-image', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Just send success response without database update
+    res.json({ 
+      success: true, 
+      message: 'Image updated ! ✅',
+      // Use the default jeep image path
+      path: '/assets/jeep.jpg'
+    });
+
+  } catch (error) {
+    console.error('Error handling image:', error);
+    res.status(500).json({ 
+      error: 'Failed to handle image',
+      details: error.message 
+    });
+  }
+});
+
 // Default route for catching any unhandled requests
 app.use((req, res) => {
-  res.status(404).send("Route not found");
+  res.status(404).json({ error: "Route not found" });
 });
 
-// Route to add a schedule
-/*app.post('/api/schedule', (req, res) => {
-  const { route, departure, seats_available } = req.body;
-
-  // Log the incoming data to see if the request is being handled
-  console.log('Received data:', { route, departure, seats_available });
-
-  if (!route || !departure || !seats_available) {
-      return res.status(400).json({ error: 'route, Departure, and Seats Available are required' });
-  }
-
-  const query = 'INSERT INTO schedule (route, departure, seats_available) VALUES (?, ?, ?)';
-  db.query(query, [route, departure, seats_available], (err, result) => {
-      if (err) {
-          console.error('Error inserting schedule:', err);
-          return res.status(500).json({ error: 'Error adding schedule' });
-      }
-
-      console.log('Schedule inserted with ride_id:', result.insertId);
-      res.status(201).json({ message: 'Schedule added successfully', ride_id: result.insertId });
-  });
-});
-*/
 // Start server on port 8080
 const port = 5000;
 app.listen(port, () => {

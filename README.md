@@ -35,8 +35,8 @@ Anyway, sana makapasa na tayo.
 
 ## Technologies Used
 - **Frontend**: HTML, CSS, JavaScript, AJAX
-- **Backend**: PHP, NodeJs, Express
-- **Database**: MySQL, Mysql2
+- **Backend**: PHP, NodeJs, Express, multer
+- **Database**: MySQL, Mysql2, 
 
 ## Configurations and Installations
 ### Installations
@@ -49,6 +49,7 @@ Anyway, sana makapasa na tayo.
 - npm install express
 - npm install nodejs
 - npm install mysql2
+- npm install multer
 - npm init -y --> for creating and/or updating package.json
 
 ### Configurations
