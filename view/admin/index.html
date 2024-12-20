@@ -28,8 +28,84 @@
       </nav>
     </aside>
     <main class="main-content">
-      <h1>Dashboard</h1>
-      <p>Welcome to the admin dashboard!</p>
+      <h1>Dashboard Overview</h1>
+      
+      <!-- Stats Cards -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <i class="icon">🚗</i>
+          <h3>Active Rides</h3>
+          <p class="stat-number">24</p>
+          <p class="stat-label">Currently ongoing</p>
+        </div>
+        <div class="stat-card">
+          <i class="icon">👥</i>
+          <h3>Total Users</h3>
+          <p class="stat-number">1,234</p>
+          <p class="stat-label">Registered accounts</p>
+        </div>
+        <div class="stat-card">
+          <i class="icon">⚠️</i>
+          <h3>Reports</h3>
+          <p class="stat-number">5</p>
+          <p class="stat-label">Pending review</p>
+        </div>
+        <div class="stat-card">
+          <i class="icon">🚫</i>
+          <h3>Blacklisted</h3>
+          <p class="stat-number">18</p>
+          <p class="stat-label">Blocked accounts</p>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <section class="recent-activity">
+        <h2>Recent Activity</h2>
+        <div class="activity-list">
+          <div class="activity-item">
+            <span class="time">10:45 AM</span>
+            <span class="event">New user registration: John Doe</span>
+          </div>
+          <div class="activity-item">
+            <span class="time">10:30 AM</span>
+            <span class="event">Ride completed: ID #1234</span>
+          </div>
+          <div class="activity-item">
+            <span class="time">10:15 AM</span>
+            <span class="event">New report submitted: User misconduct</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Actions -->
+      <section class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+          <button class="action-btn"><i class="icon">➕</i> Add New Driver</button>
+          <button class="action-btn"><i class="icon">🚫</i> Review Reports</button>
+          <button class="action-btn"><i class="icon">📊</i> Generate Reports</button>
+          <button class="action-btn"><i class="icon">✉️</i> Send Announcement</button>
+        </div>
+      </section>
+
+      <!-- System Status -->
+      <section class="system-status">
+        <h2>System Status</h2>
+        <div class="status-grid">
+          <div class="status-item">
+            <span class="status-label">Server Status</span>
+            <span class="status-value green">Online</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">API Response Time</span>
+            <span class="status-value">145ms</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Last Backup</span>
+            <span class="status-value">2 hours ago</span>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </body>

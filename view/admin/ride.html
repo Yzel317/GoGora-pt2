@@ -103,6 +103,92 @@
 
       padding: 5px;
     }
+
+    .upload-area {
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      margin: 20px;
+      min-height: 200px;
+      position: relative;
+    }
+
+    .upload-area.drag-over {
+      border-color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .upload-message {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .upload-status {
+      margin-top: 15px;
+      color: #666;
+    }
+
+    .file-info {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #4285F4;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 15px;
+    }
+
+    .select-btn {
+      background: #4285F4;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .select-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      color: #c73421;
+      margin-top: 10px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;  /* Space between buttons */
+      align-items: center;
+    }
+
+    .add-ride, .delete-ride, .download-csv {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      color: white;
+    }
+
+    .download-csv {
+      background-color: #4285F4;
+      color: white;
+    }
+
+    .add-ride:hover, .delete-ride:hover, .download-csv:hover {
+      opacity: 0.9;
+    }
+    .add-ride:hover, .delete-ride:hover{
+      background-color: #0A3981;
+    }
+
   </style>
 </head>
 <body>
@@ -175,6 +261,41 @@
       </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Setup drag and drop
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('fileInput');
+
+      if (dropZone && fileInput) {
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+          dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+          handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+          handleFile(e.target.files[0]);
+        });
+      }
+
+      // Add click handler for select button
+      const selectButton = document.getElementById('selectButton');
+      if (selectButton) {
+        selectButton.addEventListener('click', handleFileUpload);
+      }
+    });
+
     let allRides = [];  // Store all fetched rides
 
     // Fetch data for rides
@@ -211,9 +332,9 @@
           <p>${ride.ride_id}</p>
           <p>${ride.plate_number}</p>
           <div class="image-container">
-            <img src="${ride.image || '/images/default-vehicle.jpg'}" alt="Image">
+            <img src="./assets/Vehicle_Default.png" alt="Image">
             <div class="image-buttons">
-              <button onclick="previewImage('${ride.image}')" class="preview-btn">Preview</button>
+              <button onclick="previewImage('./assets/Vehicle_Default.png')" class="preview-btn">Preview</button>
               <button onclick="replaceImage(${ride.ride_id})" class="replace-btn">Replace</button>
             </div>
           </div>
@@ -374,36 +495,111 @@
       document.getElementById('imagePreviewModal').style.display = 'none';
     }
 
+    let selectedFile = null;
+
     function replaceImage(rideId) {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const formData = new FormData();
-          formData.append('image', file);
-          formData.append('ride_id', rideId);
-          
-          try {
-            const response = await fetch('/api/rides/update-image', {
-              method: 'POST',
-              body: formData
-            });
-            
-            if (response.ok) {
-              alert('Image updated successfully!');
-              fetchData(); // Refresh the ride list
-            } else {
-              throw new Error('Failed to update image');
-            }
-          } catch (error) {
-            console.error('Error updating image:', error);
-            alert('Failed to update image');
-          }
+      const modal = document.getElementById('uploadImageModal');
+      if (!modal) {
+        console.error('Upload modal not found');
+        return;
+      }
+      
+      // Store rideId for later use
+      modal.dataset.rideId = rideId;
+      
+      // Reset upload state
+      const uploadStatus = document.getElementById('uploadStatus');
+      const fileInfo = document.getElementById('fileInfo');
+      const selectButton = document.getElementById('selectButton');
+      
+      if (uploadStatus) uploadStatus.textContent = '';
+      if (fileInfo) fileInfo.textContent = '';
+      if (selectButton) selectButton.disabled = true;
+      
+      // Show the modal
+      modal.style.display = 'block';
+    }
+
+    function handleFile(file) {
+      const maxSize = 6 * 1024 * 1024; // 6MB
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      const statusDiv = document.getElementById('uploadStatus');
+      const fileInfoDiv = document.getElementById('fileInfo');
+      const selectButton = document.getElementById('selectButton');
+      
+      // Validate file
+      if (!file) return;
+      
+      if (!allowedTypes.includes(file.type)) {
+        statusDiv.innerHTML = '<span class="error-message">Error: Only JPEG, JPG, and PNG files are allowed.</span>';
+        selectButton.disabled = true;
+        return;
+      }
+      
+      if (file.size > maxSize) {
+        statusDiv.innerHTML = '<span class="error-message">Error: File size must be less than 6MB.</span>';
+        selectButton.disabled = true;
+        return;
+      }
+      
+      // File is valid
+      selectedFile = file;
+      statusDiv.textContent = 'File ready for upload';
+      
+      // Get ride details for filename preview
+      const modal = document.getElementById('uploadImageModal');
+      const rideId = modal.dataset.rideId;
+      const ride = allRides.find(r => r.ride_id === parseInt(rideId));
+      const fileExtension = file.name.split('.').pop();
+      const newFileName = `${ride.ride_id}_${ride.route}.${fileExtension}`;
+      
+      fileInfoDiv.textContent = `This file will be renamed as: ${newFileName}`;
+      selectButton.disabled = false;
+    }
+
+    async function handleFileUpload() {
+      if (!selectedFile) return;
+      
+      const modal = document.getElementById('uploadImageModal');
+      const rideId = modal.dataset.rideId;
+      
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+      formData.append('ride_id', rideId);
+      
+      try {
+        const response = await fetch('/api/rides/update-image', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          alert('Image uploaded successfully!');
+          closeUploadImageModal();
+          fetchData(); // Refresh the ride list
+        } else {
+          throw new Error('Failed to upload image');
         }
-      };
-      input.click();
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('Failed to upload image');
+      }
+    }
+
+    function closeUploadImageModal() {
+      const modal = document.getElementById('uploadImageModal');
+      if (modal) {
+        modal.style.display = 'none';
+        selectedFile = null;
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) fileInput.value = '';
+        const uploadStatus = document.getElementById('uploadStatus');
+        if (uploadStatus) uploadStatus.textContent = '';
+        const fileInfo = document.getElementById('fileInfo');
+        if (fileInfo) fileInfo.textContent = '';
+        const selectButton = document.getElementById('selectButton');
+        if (selectButton) selectButton.disabled = true;
+      }
     }
 
     // Update the form submission handler
@@ -586,6 +782,31 @@
       <span class="close" onclick="closeConfirmModal()">&times;</span>
       <h2>Discard Changes?</h2>
       <!-- rest of the confirmation modal content -->
+    </div>
+  </div>
+
+  <!-- Upload Image Modal -->
+  <div id="uploadImageModal" class="modal">
+    <div class="modal-content">
+      <div class="window-controls">
+        <button class="window-control minimize" title="Minimize" onclick="minimizeModal('uploadImageModal')">─</button>
+        <button class="window-control maximize" title="Maximize" onclick="maximizeModal('uploadImageModal')">□</button>
+        <button class="window-control close-btn" title="Close" onclick="closeUploadImageModal()">×</button>
+      </div>
+      
+      <div class="upload-area" id="dropZone">
+        <div class="upload-message">
+          Upload from device or drag your image here 📁
+        </div>
+        <input type="file" id="fileInput" accept=".jpg,.jpeg,.png" hidden>
+        <div id="uploadStatus" class="upload-status"></div>
+        <div id="fileInfo" class="file-info"></div>
+      </div>
+      
+      <div class="modal-buttons">
+        <button id="selectButton" class="select-btn" disabled>Select</button>
+        <button class="cancel-btn" onclick="closeUploadImageModal()">Cancel</button>
+      </div>
     </div>
   </div>
 </body>

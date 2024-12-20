@@ -3,11 +3,7 @@ const path = require('path');
 const app = express();
 
 // Routes
-<<<<<<< Updated upstream
-const ridesRouter = require('./view/admin/api/rides'); 
-=======
 const ridesRouter = require('./view/admin/api/rides._editor');
->>>>>>> Stashed changes
 const scheduleRouter = require('./view/admin/api/schedule');
 const usersRouter = require('./view/admin/api/users');
 const blacklistRouter = require('./view/admin/api/blacklist');
