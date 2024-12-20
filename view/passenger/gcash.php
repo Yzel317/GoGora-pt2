@@ -1,4 +1,16 @@
-<!-- Author: Justine Lucas -->
+<?php
+session_start();
+
+// Verify we have the ride information
+if (!isset($_SESSION['ride_id'])) {
+    header("Location: booking.php");
+    exit();
+}
+
+// Set payment status in session
+$_SESSION['payment_status'] = 'Paid';
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

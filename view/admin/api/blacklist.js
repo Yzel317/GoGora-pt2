@@ -8,10 +8,8 @@ const db = require('./db');
 router.get('/', async (req, res) => {
     try {
         const query = `
-            SELECT b.*, u.username, u.firstname, u.lastname 
-            FROM blacklist b
-            JOIN users u ON b.user_id = u.user_id
-            ORDER BY b.created_at DESC
+            SELECT * FROM blacklist
+            ORDER BY blacklist_date DESC
         `;
         const blacklist = await db.query(query);
         res.json(blacklist[0]);
@@ -22,14 +20,14 @@ router.get('/', async (req, res) => {
 
 // Add user to blacklist
 router.post('/', async (req, res) => {
-    const { user_id, reason_id, notes } = req.body;
+    const { username, reason } = req.body;
     
     try {
         const query = `
-            INSERT INTO blacklist (user_id, reason_id, notes, status, created_at)
-            VALUES (?, ?, ?, 'pending', NOW())
+            INSERT INTO blacklist (username, blacklist_date, blacklist_status, reason)
+            VALUES (?, NOW(), 'pending', ?)
         `;
-        await db.query(query, [user_id, reason_id, notes]);
+        await db.query(query, [username, reason]);
         res.status(201).json({ message: 'User added to blacklist' });
     } catch (error) {
         res.status(500).json({ message: 'Error adding to blacklist' });
@@ -39,17 +37,16 @@ router.post('/', async (req, res) => {
 // Update blacklist status
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { status, notes } = req.body;
+    const { blacklist_status, reason } = req.body;
     
     try {
         const query = `
             UPDATE blacklist 
-            SET status = ?, 
-                notes = COALESCE(?, notes),
-                updated_at = NOW()
+            SET blacklist_status = ?,
+                reason = COALESCE(?, reason)
             WHERE blacklist_id = ?
         `;
-        await db.query(query, [status, notes, id]);
+        await db.query(query, [blacklist_status, reason, id]);
         res.json({ message: 'Blacklist status updated' });
     } catch (error) {
         res.status(500).json({ message: 'Error updating blacklist status' });

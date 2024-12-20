@@ -31,7 +31,9 @@ async function loadUsers() {
         userTableBody.innerHTML = '';
     
         users.forEach(user => {
-            const avatar = user.avatar ? `<img src="${user.avatar}" alt="${user.username}'s avatar">` : 'N/A'; // Check if avatar exists
+            const avatar = user.avatar ? 
+                `<img src="${user.avatar}" alt="${user.username}'s avatar" style="width: 25px; height: 25px; object-fit: cover; border-radius: 50%;">` : 
+                '<img src="/assets/profile.png" alt="Default avatar" style="width: 25px; height: 25px; object-fit: cover; border-radius: 50%;">';
     
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -41,7 +43,7 @@ async function loadUsers() {
                 <td>${user.email}</td>
                 <td>${user.role}</td>
                 <td>${user.password}</td>
-                <td>${avatar}</td>  <!-- Display the image or N/A if not available -->
+                <td>${avatar}</td>
                 <td>
                     <button class="edit-button" onclick="openUpdateModal(${user.user_id})">Edit</button>
                     <button class="delete-button" onclick="deleteUser(${user.user_id})">Delete</button>
@@ -292,7 +294,9 @@ function renderFilteredUsers(filteredUsers) {
     }
 
     filteredUsers.forEach(user => {
-        const avatar = user.avatar ? `<img src="${user.avatar}" alt="${user.username}'s avatar">` : 'N/A';
+        const avatar = user.avatar ? 
+            `<img src="${user.avatar}" alt="${user.username}'s avatar" style="width: 25px; height: 25px; object-fit: cover; border-radius: 50%;">` : 
+            '<img src="/assets/profile.png" alt="Default avatar" style="width: 25px; height: 25px; object-fit: cover; border-radius: 50%;">';
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${user.username}</td>

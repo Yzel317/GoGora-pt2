@@ -9,30 +9,48 @@
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">   
-  <script src="script.js" defer></script>
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <script src="/api/blacklist_manager.js" defer></script>
   <style>
-    /* Blacklist specific styles */
-    .blacklist-controls {
-      position: absolute;
-      right: 10px;
-      top: 10px;
+    .search-filters {
       display: flex;
-      gap: 8px;
+      justify-content: flex-start;
+      gap: 30px;
+      margin: 20px 0;
+      align-items: center;
     }
 
-    .blacklist-modal-content.minimized {
-      transform: scale(0.7);
-      width: 70%;
-      margin-top: 80vh;
-      opacity: 0.8;
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .blacklist-modal-content.maximized {
-      width: 95vw;
-      max-width: none;
-      height: 90vh;
-      margin: 5vh auto;
+    .table-wrapper {
+      margin-top: 20px;
+    }
+
+    #blacklistTable th,
+    #blacklistTable td {
+      padding: 15px;
+      text-align: left;
+    }
+
+    .action-bar {
+      margin: 20px 0;
+    }
+
+    .modal-content {
+      padding: 25px;
+    }
+
+    .form-group {
+      margin: 15px 0;
+    }
+
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
     }
   </style>
 </head>
@@ -45,10 +63,10 @@
       <nav>
         <ul class="menu">
           <li><a href="index.html" class="menu-item"><i class="icon">🏠</i> Dashboard</a></li>
-          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a>
+          <li><a href="ride_manager.html" class="menu-item"><i class="icon">🛣️</i> Manage Rides</a></li>
           <li><a href="account_manager.html" class="menu-item"><i class="icon">👥</i> Manage Accounts</a></li>
           <li><a href="statistics.html" class="menu-item"><i class="icon">📊</i> Statistics</a></li>
-          <li><a href="blacklist.html" class="menu-item"><i class="icon">🚫</i> Blacklist Passengers</a></li>
+          <li><a href="blacklist.html" class="menu-item active"><i class="icon">🚫</i> Blacklist Passengers</a></li>
         </ul>
       </nav>
     </aside>
@@ -59,30 +77,16 @@
       <div class="search-filters">
         <div class="filter-group">
           <label for="searchInput">Search:</label>
-          <input type="text" id="searchInput" placeholder="Search by name">
+          <input type="text" id="searchInput" placeholder="Search by username">
         </div>
         <div class="filter-group">
           <label for="filterStatus">Status:</label>
           <select id="filterStatus">
             <option value="">All Status</option>
             <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
+            <option value="Blacklisted">Blacklisted</option>
             <option value="cleared">Cleared</option>
           </select>
-        </div>
-        <div class="filter-group">
-          <label for="filterReason">Reason:</label>
-          <select id="filterReason">
-            <option value="">All Reasons</option>
-            <option value="0001">Did not pay on time</option>
-            <option value="0002">Frequent cancellations</option>
-            <option value="0003">Mass bookings</option>
-          </select>
-        </div>
-        <div class="filter-buttons">
-          <button onclick="applyFilters()">Apply</button>
-          <button onclick="clearFilters()">Clear All</button>
         </div>
       </div>
 
@@ -96,9 +100,8 @@
         <table id="blacklistTable">
           <thead>
             <tr>
-              <th>User</th>
+              <th>Username</th>
               <th>Reason</th>
-              <th>Notes</th>
               <th>Status</th>
               <th>Date Added</th>
               <th>Actions</th>
@@ -124,16 +127,8 @@
           </select>
         </div>
         <div class="form-group">
-          <label for="reasonId">Reason:</label>
-          <select id="reasonId" required>
-            <option value="0001">Did not pay on time</option>
-            <option value="0002">Frequent cancellations</option>
-            <option value="0003">Mass bookings</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="notes">Additional Notes:</label>
-          <textarea id="notes" rows="3"></textarea>
+          <label for="notes">Reason:</label>
+          <textarea id="notes" rows="3" required></textarea>
         </div>
         <div class="button-group">
           <button type="submit">Add to Blacklist</button>
@@ -153,13 +148,12 @@
           <label for="updateStatus">Status:</label>
           <select id="updateStatus" required>
             <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
+            <option value="Blacklisted">Blacklisted</option>
             <option value="cleared">Cleared</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="updateNotes">Notes:</label>
+          <label for="updateNotes">Reason:</label>
           <textarea id="updateNotes" rows="3"></textarea>
         </div>
         <div class="button-group">
@@ -171,4 +165,3 @@
   </div>
 </body>
 </html>
-
