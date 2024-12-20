@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">  
-  <script src="/api/users.js" defer></script>
-  <script src="/api/account_mngr.js" defer></script>
+  <script src="/js/users.js" defer></script>
+  <script src="/js/account_mngr.js" defer></script>
 </head>
 <body>
   <div class="dashboard">
@@ -32,15 +32,31 @@
         <h1>Manage Accounts</h1>
       </div>
       <div class="search-filters">
-        <input type="text" id="searchInput" placeholder="Search Name" oninput="filterUsers()">
-        <select id="filterRole">
-          <option value="">Filter by Role</option>
-        </select>
-        <select id="filterUserType">
-          <option value="">Filter by User Type</option>
-        </select>
-        <button onclick="applyFilters()">Apply</button>
-        <button onclick="clearFilters()">Clear All</button>
+        <div class="filter-group">
+          <label for="searchInput">Search:</label>
+          <input type="text" id="searchInput" placeholder="Search Name" oninput="filterUsers()">
+        </div>
+        
+        <div class="filter-group">
+          <label for="filterRole">Role:</label>
+          <select id="filterRole">
+            <option value="">All Roles</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="filterUserType">User Type:</label>
+          <select id="filterUserType">
+            <option value="">All Types</option>
+            <option value="regular">Regular</option>
+            <option value="priority">Priority</option>
+          </select>
+        </div>
+        
+        <div class="filter-buttons">
+          <button onclick="applyFilters()">Apply</button>
+          <button onclick="clearFilters()">Clear All</button>
+        </div>
       </div>
       <div class="table-wrapper rides-section">
         <div class="title-section">
@@ -104,7 +120,7 @@
   </div>
 
   <!-- Update User Modal -->
-  <div id="updateUserModal" class="modal">
+  <div id="updateUserModal" class="modal" style="display: none;">
     <div class="modal-content">
       <h2>Update User</h2>
       <form id="updateUserForm" onsubmit="updateUser(event)">
@@ -136,15 +152,18 @@
     // Filter users based on search input
     function filterUsers() {
       const searchInput = document.getElementById('searchInput').value.toLowerCase();
-      const filteredUsers = allUsers.filter(user => {
+      const filterRole = document.getElementById('filterRole').value;
+      const filteredUsers = users.filter(user => {
         return (
-          user.user_id.toString().includes(searchInput) ||
+          (!filterRole || user.role === filterRole) &&
+          (user.username.toLowerCase().includes(searchInput) ||
           user.firstname.toLowerCase().includes(searchInput) ||
-          user.lastname.toLowerCase().includes(searchInput)
+          user.lastname.toLowerCase().includes(searchInput))
         );
       });
       loadUsers(filteredUsers);
     }
+
   </script>
 </body>
 </html>
