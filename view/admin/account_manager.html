@@ -12,14 +12,8 @@
   <script src="/js/account_mngr.js" defer></script>
   <link rel="icon" type="image/png" href="/assets/favicon.png">
   <style>
-    /* Common Modal and Control Styles */
-    .image-container {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .window-controls {
+    /* Account manager specific styles */
+    .user-controls {
       position: absolute;
       right: 10px;
       top: 10px;
@@ -27,98 +21,18 @@
       gap: 8px;
     }
 
-    .window-control {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: none;
-      color: rgb(255, 255, 255);
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .minimize {
-      background-color: #edd132;
-      color: black;
-    }
-
-    .maximize {
-      background-color: #34A853;
-      color: black;
-    }
-
-    .close-btn {
-      background-color: #c73421;
-      color: black;
-    }
-
-    .window-control:hover {
-      opacity: 0.8;
-    }
-
-    .modal-content.minimized {
+    .user-modal-content.minimized {
       transform: scale(0.7);
       width: 70%;
       margin-top: 80vh;
       opacity: 0.8;
     }
 
-    .modal-content.maximized {
+    .user-modal-content.maximized {
       width: 95vw;
       max-width: none;
       height: 90vh;
       margin: 5vh auto;
-    }
-
-    /* Button Styles */
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .add-button, .delete-button, .download-csv {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      color: white;
-      background-color: #4285F4;
-    }
-
-    .add-button:hover, .delete-button:hover {
-      background-color: #0A3981;
-    }
-
-    /* Form Styles */
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 20px;
     }
   </style>
 </head>
@@ -196,13 +110,9 @@
   </div>
 
   <!-- Add User Modal -->
-  <div id="addUserModal" class="modal">
+  <div id="addUserModal" class="modal" style=
+  "display: none;">
     <div class="modal-content">
-      <div class="window-controls">
-        <button class="window-control minimize" title="Minimize" onclick="minimizeModal('addUserModal')">─</button>
-        <button class="window-control maximize" title="Maximize" onclick="maximizeModal('addUserModal')">□</button>
-        <button class="window-control close-btn" title="Close" onclick="closeAddUserModal()">×</button>
-      </div>
       <h2>Add User</h2>
       <form id="addUserForm" onsubmit="addUser(event)">
         <label for="username">Username:</label>
@@ -237,11 +147,6 @@
   <!-- Update User Modal -->
   <div id="updateUserModal" class="modal" style="display: none;">
     <div class="modal-content">
-      <div class="window-controls">
-        <button class="window-control minimize" title="Minimize" onclick="minimizeModal('updateUserModal')">─</button>
-        <button class="window-control maximize" title="Maximize" onclick="maximizeModal('updateUserModal')">□</button>
-        <button class="window-control close-btn" title="Close" onclick="closeUpdateUserModal()">×</button>
-      </div>
       <h2>Update User</h2>
       <form id="updateUserForm" onsubmit="updateUser(event)">
         <input type="hidden" id="updateUserId">
@@ -269,155 +174,21 @@
     </div>
   </div>
   <script>
-    // Pretend user data based on database format
-    const pretendUsers = [
-      {
-        id: 1,
-        username: 'admin',
-        firstname: 'ad',
-        lastname: 'min',
-        password: '$2y$10$7YPBFlCZ6IMN0paye1otl.SI2I/IMjeuf6v.S60T3cZvLiOjrj6v6',
-        email: 'admin@gmail.com',
-        role: 'Admin',
-        user_type: 'Regular',
-        avatar: ''
-      },
-      {
-        id: 2,
-        username: 'manager',
-        firstname: 'man',
-        lastname: 'ager',
-        password: '$2y$10$zWm2HW5vC2WedY2iu3qV.Of6U6vfmMjpKVM4IwErhurlMLq.hweWK',
-        email: 'manager@gmail.com',
-        role: 'Manager',
-        user_type: 'Regular',
-        avatar: ''
-      },
-      {
-        id: 3,
-        username: 'z',
-        firstname: 'zel',
-        lastname: 'b',
-        password: '$2y$10$0hOb/9a6QshF/s89q3Zm3eXLpJgzQwr7KPXsxe/Nz/zmjz6W.Qeea',
-        email: '123456@slu.edu.ph',
-        role: 'Student',
-        user_type: 'Regular',
-        avatar: ''
-      },
-      {
-        id: 4,
-        username: 'jekka',
-        firstname: 'Jekka',
-        lastname: 'Hufalar',
-        password: '$2y$10$oI.T8Ox4m.Je9YbuS9RsQeguuMBte6L/A8sKzXKHCfcQOgecPWKm2',
-        email: 'jekka@gmail.com',
-        role: 'Student',
-        user_type: 'Regular',
-        avatar: null
-      }
-    ];
-
-    // Function to display users
-    function displayUsers(users) {
-      const userTableBody = document.getElementById('userTableBody');
-      userTableBody.innerHTML = '';
-
-      if (users.length === 0) {
-        userTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: gray;">Sorry 🥲 No users found matching your search criteria 🥲</td></tr>`;
-        return;
-      }
-
-      users.forEach(user => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${user.username}</td>
-          <td>${user.firstname}</td>
-          <td>${user.lastname}</td>
-          <td>${user.email}</td>
-          <td>${user.role}</td>
-          <td>********</td>
-          <td>
-            <img src="${user.avatar || './assets/default_avatar.png'}" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%;">
-          </td>
-          <td>
-            <button onclick="editUser(${user.id})" class="edit-btn">Edit</button>
-            <button onclick="deleteUser(${user.id})" class="delete-btn">Delete</button>
-          </td>
-        `;
-        userTableBody.appendChild(row);
-      });
-    }
-
-    // Filter users
+    // Filter users based on search input
     function filterUsers() {
       const searchInput = document.getElementById('searchInput').value.toLowerCase();
-      const roleFilter = document.getElementById('filterRole').value;
-      const typeFilter = document.getElementById('filterUserType').value;
-
-      const filteredUsers = pretendUsers.filter(user => {
+      const filterRole = document.getElementById('filterRole').value;
+      const filteredUsers = users.filter(user => {
         return (
+          (!filterRole || user.role === filterRole) &&
           (user.username.toLowerCase().includes(searchInput) ||
-           user.firstname.toLowerCase().includes(searchInput) ||
-           user.lastname.toLowerCase().includes(searchInput)) &&
-          (roleFilter === '' || user.role === roleFilter) &&
-          (typeFilter === '' || user.user_type.toLowerCase() === typeFilter)
+          user.firstname.toLowerCase().includes(searchInput) ||
+          user.lastname.toLowerCase().includes(searchInput))
         );
       });
-
-      displayUsers(filteredUsers);
+      loadUsers(filteredUsers);
     }
 
-    // Populate role filter
-    function populateFilters() {
-      const roles = [...new Set(pretendUsers.map(user => user.role))];
-      const roleSelect = document.getElementById('filterRole');
-      
-      roles.forEach(role => {
-        const option = document.createElement('option');
-        option.value = role;
-        option.textContent = role;
-        roleSelect.appendChild(option);
-      });
-    }
-
-    // Clear filters
-    function clearFilters() {
-      document.getElementById('searchInput').value = '';
-      document.getElementById('filterRole').value = '';
-      document.getElementById('filterUserType').value = '';
-      displayUsers(pretendUsers);
-    }
-
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', () => {
-      displayUsers(pretendUsers);
-      populateFilters();
-    });
-
-    // Window control functions
-    function minimizeModal(modalId) {
-      const modalContent = document.querySelector(`#${modalId} .modal-content`);
-      modalContent.classList.toggle('minimized');
-      if (modalContent.classList.contains('maximized')) {
-        modalContent.classList.remove('maximized');
-      }
-    }
-
-    function maximizeModal(modalId) {
-      const modalContent = document.querySelector(`#${modalId} .modal-content`);
-      modalContent.classList.toggle('maximized');
-      if (modalContent.classList.contains('minimized')) {
-        modalContent.classList.remove('minimized');
-      }
-    }
-
-    // Update modal close functions
-    function closeModal(modalId) {
-      const modal = document.getElementById(modalId);
-      const modalContent = modal.querySelector('.modal-content');
-      modalContent.classList.remove('minimized', 'maximized');
-      modal.style.display = 'none';
-    }
   </script>
 </body>
 </html>

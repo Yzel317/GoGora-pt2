@@ -34,56 +34,6 @@
       height: 90vh;
       margin: 5vh auto;
     }
-
-    .window-controls {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      display: flex;
-      gap: 8px;
-    }
-
-    .window-control {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: none;
-      color: rgb(255, 255, 255);
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .minimize {
-      background-color: #edd132;
-      color: black;
-    }
-
-    .maximize {
-      background-color: #34A853;
-      color: black;
-    }
-
-    .close-btn {
-      background-color: #c73421;
-      color: black;
-    }
-
-    .modal-content.minimized {
-      transform: scale(0.7);
-      width: 70%;
-      margin-top: 80vh;
-      opacity: 0.8;
-    }
-
-    .modal-content.maximized {
-      width: 95vw;
-      max-width: none;
-      height: 90vh;
-      margin: 5vh auto;
-    }
   </style>
 </head>
 <body>
@@ -165,11 +115,6 @@
   <!-- Add to Blacklist Modal -->
   <div id="addBlacklistModal" class="modal">
     <div class="modal-content">
-      <div class="window-controls">
-        <button class="window-control minimize" title="Minimize" onclick="minimizeModal('addBlacklistModal')">─</button>
-        <button class="window-control maximize" title="Maximize" onclick="maximizeModal('addBlacklistModal')">□</button>
-        <button class="window-control close-btn" title="Close" onclick="closeAddBlacklistModal()">×</button>
-      </div>
       <h2>Add to Blacklist</h2>
       <form id="addBlacklistForm">
         <div class="form-group">
@@ -201,11 +146,6 @@
   <!-- Update Status Modal -->
   <div id="updateStatusModal" class="modal">
     <div class="modal-content">
-      <div class="window-controls">
-        <button class="window-control minimize" title="Minimize" onclick="minimizeModal('updateStatusModal')">─</button>
-        <button class="window-control maximize" title="Maximize" onclick="maximizeModal('updateStatusModal')">□</button>
-        <button class="window-control close-btn" title="Close" onclick="closeUpdateStatusModal()">×</button>
-      </div>
       <h2>Update Status</h2>
       <form id="updateStatusForm">
         <input type="hidden" id="updateBlacklistId">
@@ -229,135 +169,6 @@
       </form>
     </div>
   </div>
-
-  <script>
-  // Pretend blacklist data
-  const pretendBlacklist = [
-    {
-      id: 1,
-      user_id: 3,
-      username: 'z',
-      reason_id: '0001',
-      reason: 'Did not pay on time',
-      notes: 'Multiple instances of late payment',
-      status: 'approved',
-      date_added: '2024-03-15'
-    },
-    {
-      id: 2,
-      user_id: 4,
-      username: 'jekka',
-      reason_id: '0002',
-      reason: 'Frequent cancellations',
-      notes: 'Cancelled 5 rides in the past week',
-      status: 'pending',
-      date_added: '2024-03-18'
-    }
-  ];
-
-  // Function to display blacklist entries
-  function displayBlacklist(entries) {
-    const tableBody = document.querySelector('#blacklistTable tbody');
-    tableBody.innerHTML = '';
-
-    if (entries.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: gray;">Sorry 🥲 No blacklist entries found matching your search criteria 🥲</td></tr>`;
-      return;
-    }
-
-    entries.forEach(entry => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${entry.username}</td>
-        <td>${entry.reason}</td>
-        <td>${entry.notes}</td>
-        <td><span class="status ${entry.status}">${entry.status}</span></td>
-        <td>${new Date(entry.date_added).toLocaleDateString()}</td>
-        <td>
-          <button onclick="updateStatus(${entry.id})" class="edit-btn">Update Status</button>
-          <button onclick="removeFromBlacklist(${entry.id})" class="delete-btn">Remove</button>
-        </td>
-      `;
-      tableBody.appendChild(row);
-    });
-  }
-
-  // Filter blacklist entries
-  function filterBlacklist() {
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const statusFilter = document.getElementById('filterStatus').value;
-    const reasonFilter = document.getElementById('filterReason').value;
-
-    const filteredEntries = pretendBlacklist.filter(entry => {
-      return (
-        entry.username.toLowerCase().includes(searchInput) &&
-        (statusFilter === '' || entry.status === statusFilter) &&
-        (reasonFilter === '' || entry.reason_id === reasonFilter)
-      );
-    });
-
-    displayBlacklist(filteredEntries);
-  }
-
-  // Clear filters
-  function clearFilters() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('filterStatus').value = '';
-    document.getElementById('filterReason').value = '';
-    displayBlacklist(pretendBlacklist);
-  }
-
-  // Initialize the page
-  document.addEventListener('DOMContentLoaded', () => {
-    displayBlacklist(pretendBlacklist);
-  });
-
-  // Window control functions
-  function minimizeModal(modalId) {
-    const modalContent = document.querySelector(`#${modalId} .modal-content`);
-    modalContent.classList.toggle('minimized');
-    if (modalContent.classList.contains('maximized')) {
-      modalContent.classList.remove('maximized');
-    }
-  }
-
-  function maximizeModal(modalId) {
-    const modalContent = document.querySelector(`#${modalId} .modal-content`);
-    modalContent.classList.toggle('maximized');
-    if (modalContent.classList.contains('minimized')) {
-      modalContent.classList.remove('minimized');
-    }
-  }
-
-  // Update the existing close functions
-  function closeAddUserModal() {
-    const modal = document.getElementById('addUserModal');
-    const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('minimized', 'maximized');
-    modal.style.display = 'none';
-  }
-
-  function closeUpdateUserModal() {
-    const modal = document.getElementById('updateUserModal');
-    const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('minimized', 'maximized');
-    modal.style.display = 'none';
-  }
-
-  function closeAddBlacklistModal() {
-    const modal = document.getElementById('addBlacklistModal');
-    const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('minimized', 'maximized');
-    modal.style.display = 'none';
-  }
-
-  function closeUpdateStatusModal() {
-    const modal = document.getElementById('updateStatusModal');
-    const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('minimized', 'maximized');
-    modal.style.display = 'none';
-  }
-  </script>
 </body>
 </html>
 
