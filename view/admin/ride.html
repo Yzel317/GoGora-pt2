@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/assets/favicon.png">
   <script src="/api/ride_editor.js"></script>
+  <script src="/api/ride_editor.js"></script>
 
   <style>
     /* Ride-specific styles */
@@ -405,6 +406,222 @@
       border-radius: 4px;
     }
 
+    /* Add these styles to your existing style section */
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .save-btn {
+      background-color: #4285F4;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .save-btn:hover {
+      background-color: #3367D6;
+    }
+
+    .cancel-btn {
+      background-color: #757575;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .cancel-btn:hover {
+      background-color: #616161;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    .success-popup {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #34A853;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 5px;
+      z-index: 1000;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    .checkbox-column {
+      width: 30px;
+      text-align: center;
+      display: none;
+    }
+
+    .checkbox-column.show {
+      display: table-cell;
+    }
+
+    .delete-mode-controls {
+      display: none;
+      margin: 10px 0;
+      gap: 10px;
+    }
+
+    .delete-mode-controls.show {
+      display: flex;
+    }
+
+    .delete-mode-controls button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .confirm-delete {
+      background-color: #EA4335;
+      color: white;
+    }
+
+    .cancel-delete {
+      background-color: #757575;
+      color: white;
+    }
+
+    .error-message {
+      color: #EA4335;
+      margin: 10px 0;
+      display: none;
+    }
+
+    .delete-mode-controls {
+      margin: 10px 0;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .confirm-delete {
+      background-color: #EA4335;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .cancel-delete {
+      background-color: #757575;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .error-message {
+      color: #EA4335;
+      margin-left: 10px;
+      display: none;
+    }
+
+    .ride-checkbox {
+      margin-right: 10px;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    .delete-content {
+      padding: 20px;
+    }
+
+    .delete-ride-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .delete-ride-item:last-child {
+      border-bottom: none;
+    }
+
+    .delete-ride-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+    }
+
+    .confirm-delete {
+      background-color: #EA4335;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .cancel-delete {
+      background-color: #757575;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    #deleteRidesList {
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 15px 0;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+
   </style>
 </head>
 <body>
@@ -449,6 +666,9 @@
         <h3> Capacity: </h3>
         <select id="filterCapacity">
           <option value="">Filter by Capacity</option>
+        <h3> Capacity: </h3>
+        <select id="filterCapacity">
+          <option value="">Filter by Capacity</option>
         </select>
         <button onclick="applyFilters()">Apply</button>
         <button onclick="clearFilters()">Clear All</button>
@@ -468,12 +688,18 @@
           <button class="cancel-delete" onclick="exitDeleteMode()">Cancel</button>
           <div class="error-message">Please select at least one ride to delete.</div>
         </div>
+        <div class="delete-mode-controls" style="display: none;">
+          <button class="confirm-delete" onclick="confirmDelete()">Delete Selected</button>
+          <button class="cancel-delete" onclick="exitDeleteMode()">Cancel</button>
+          <div class="error-message">Please select at least one ride to delete.</div>
+        </div>
         <div class="ride-item header">
           <p>Ride ID</p>
           <p>Plate Number</p>
           <p>Image</p>
           <p>Route</p>
           <p>Departure</p>
+          <p>Capacity</p>
           <p>Capacity</p>
         </div>
         <div id="rides-container">
@@ -540,6 +766,7 @@
     function displayRides(rides) {
       const ridesContainer = document.getElementById('rides-container');
       ridesContainer.innerHTML = '';
+      ridesContainer.innerHTML = '';
 
       if (rides.length === 0) {
         ridesContainer.innerHTML = `<p style="color: gray;">Sorry 🥲 There are no current rides available with the information you are looking for 🥲</p>`;
@@ -551,18 +778,23 @@
         rideItem.className = 'ride-item';
         const imagePath = ride.image_path || './assets/Vehicle_Default.png';
         
+        const imagePath = ride.image_path || './assets/Vehicle_Default.png';
+        
         rideItem.innerHTML = `
           <p>${ride.ride_id}</p>
           <p>${ride.plate_number}</p>
           <div class="image-container">
             <img src="${imagePath}" alt="Image" id="ride-image-${ride.ride_id}">
+            <img src="${imagePath}" alt="Image" id="ride-image-${ride.ride_id}">
             <div class="image-buttons">
+              <button onclick="previewImage('${imagePath}')" class="preview-btn">Preview</button>
               <button onclick="previewImage('${imagePath}')" class="preview-btn">Preview</button>
               <button onclick="replaceImage(${ride.ride_id})" class="replace-btn">Replace</button>
             </div>
           </div>
           <p>${ride.route}</p>
           <p>${new Date(ride.departure).toLocaleString()}</p>
+          <p>${ride.capacity}</p>
           <p>${ride.capacity}</p>
           <button onclick="editRide(${ride.ride_id})" class="edit-btn">Edit</button>
         `;
@@ -579,6 +811,7 @@
           ride.plate_number.toLowerCase().includes(searchInput) ||
           ride.route.toLowerCase().includes(searchInput) ||
           ride.capacity.toString().includes(searchInput)
+          ride.capacity.toString().includes(searchInput)
         );
       });
       displayRides(filteredRides);
@@ -590,12 +823,14 @@
       const route = document.getElementById('filterRoute').value.toLowerCase();
       const departure = document.getElementById('filterDeparture').value.toLowerCase();
       const capacity= document.getElementById('filterCapacity').value.toLowerCase();
+      const capacity= document.getElementById('filterCapacity').value.toLowerCase();
 
       const filteredRides = allRides.filter(ride => {
         return (
           (plateNumber === "" || ride.ride_id.toString().includes(plateNumber)) &&
           (route === "" || ride.route.toLowerCase().includes(route)) &&
           (departure === "" || new Date(ride.departure).toLocaleDateString().includes(departure)) &&
+          (capacity === "" || ride.capacity.toString().includes(capacity))
           (capacity === "" || ride.capacity.toString().includes(capacity))
         );
       });
@@ -610,6 +845,7 @@
       document.getElementById('filterRoute').value = '';
       document.getElementById('filterDeparture').value = '';
       document.getElementById('filterCapacity').value = '';
+      document.getElementById('filterCapacity').value = '';
       displayRides(allRides);
     }
 
@@ -619,10 +855,12 @@
       const routes = [...new Set(rides.map(ride => ride.route))];
       const departureDates = [...new Set(rides.map(ride => new Date(ride.departure).toLocaleDateString()))];
       const capacityOptions= [...new Set(rides.map(ride => ride.capacity.toString()))];
+      const capacityOptions= [...new Set(rides.map(ride => ride.capacity.toString()))];
 
       populateDropdown('filterPlateNumber', plateNumbers);
       populateDropdown('filterRoute', routes);
       populateDropdown('filterDeparture', departureDates);
+      populateDropdown('filterCapacity', capacityOptions);
       populateDropdown('filterCapacity', capacityOptions);
     }
 
@@ -664,10 +902,12 @@
       const rides = allRides;
       const csvRows = [
         ['Ride ID', 'Plate Number', 'Route', 'Capacity', 'Departure', 'Image'],
+        ['Ride ID', 'Plate Number', 'Route', 'Capacity', 'Departure', 'Image'],
         ...rides.map(ride => [
           ride.ride_id,
           ride.plate_number,
           ride.route,
+          ride.capacity,
           ride.capacity,
           new Date(ride.departure).toLocaleString(),
           ride.image_url,
@@ -696,6 +936,7 @@
       document.getElementById('editRoute').value = ride.route;
       document.getElementById('editDeparture').value = new Date(ride.departure).toISOString().slice(0, 16);
       document.getElementById('editCapacity').value = ride.capacity;
+      document.getElementById('editCapacity').value = ride.capacity;
       
       // Show the modal
       document.getElementById('editModal').style.display = 'block';
@@ -722,7 +963,14 @@
 
     function replaceImage(rideId) {
       // First show the upload modal
+      // First show the upload modal
       const modal = document.getElementById('uploadImageModal');
+      modal.style.display = 'block';
+      modal.dataset.rideId = rideId; // Store the ride ID for later use
+
+      // Reset the upload form
+      const fileInput = document.getElementById('fileInput');
+      if (fileInput) fileInput.value = '';
       modal.style.display = 'block';
       modal.dataset.rideId = rideId; // Store the ride ID for later use
 
@@ -732,7 +980,9 @@
       const uploadStatus = document.getElementById('uploadStatus');
       if (uploadStatus) uploadStatus.textContent = '';
       const fileInfo = document.getElementById('fileInfo');
+      const fileInfo = document.getElementById('fileInfo');
       if (fileInfo) fileInfo.textContent = '';
+      const selectButton = document.getElementById('selectButton');
       const selectButton = document.getElementById('selectButton');
       if (selectButton) selectButton.disabled = true;
     }
@@ -769,9 +1019,32 @@
       const ride = allRides.find(r => r.ride_id === parseInt(rideId));
       const fileExtension = file.name.split('.').pop();
       const newFileName = `${ride.plate_number}_image.${fileExtension}`;
+      const newFileName = `${ride.plate_number}_image.${fileExtension}`;
       
       fileInfoDiv.textContent = `This file will be renamed as: ${newFileName}`;
       selectButton.disabled = false;
+    }
+
+    function handleFileUpload() {
+      if (!selectedFile) return;
+      
+      const modal = document.getElementById('uploadImageModal');
+      const rideId = modal.dataset.rideId;
+      
+      // Simulate upload delay
+      setTimeout(() => {
+        // Update only the specific ride's image to jeep.jpg
+        const imageElement = document.getElementById(`ride-image-${rideId}`);
+        if (imageElement) {
+          imageElement.src = './assets/jeep.jpg';
+        }
+        
+        // Show success message
+        UploadSuccessMessage();
+        
+        // Close the upload modal
+        closeUploadImageModal();
+      }, 500); // Half second delay to simulate upload
     }
 
     function handleFileUpload() {
@@ -862,6 +1135,7 @@
         plate_number: document.getElementById('editPlateNumber').value,
         route: document.getElementById('editRoute').value,
         departure: document.getElementById('editDeparture').value,
+        capacity: parseInt(document.getElementById('editCapacity').value)
         capacity: parseInt(document.getElementById('editCapacity').value)
       };
 
@@ -1173,6 +1447,8 @@
         <div class="form-group">
           <label for="editCapacity">Capacity:</label>
           <input type="number" id="editCapacity" required>
+          <label for="editCapacity">Capacity:</label>
+          <input type="number" id="editCapacity" required>
         </div>
         <div class="button-group">
           <button type="submit" class="save-btn">Save</button>
@@ -1202,6 +1478,35 @@
         <button class="window-control close-btn" title="Close" onclick="closeAddModal()">×</button>
       </div>
       <h2>Add New Ride</h2>
+      <form id="addRideForm">
+        <div class="form-group">
+          <label for="addPlateNumber">Plate Number:</label>
+          <input type="text" id="addPlateNumber" required>
+        </div>
+        <div class="form-group">
+          <label for="addRoute">Route:</label>
+          <input type="text" id="addRoute" required>
+        </div>
+        <div class="form-group">
+          <label for="addDeparture">Departure:</label>
+          <input type="datetime-local" id="addDeparture" required>
+        </div>
+        <div class="form-group">
+          <label for="addCapacity">Capacity:</label>
+          <input type="number" id="addCapacity" required>
+        </div>
+        <div class="form-group">
+          <label for="addRideType">Ride Type:</label>
+          <select id="addRideType" required>
+            <option value="Jeepney">Jeepney</option>
+            <option value="Service">Service</option>
+          </select>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="save-btn">Add Ride</button>
+          <button type="button" class="cancel-btn" onclick="closeAddModal()">Cancel</button>
+        </div>
+      </form>
       <form id="addRideForm">
         <div class="form-group">
           <label for="addPlateNumber">Plate Number:</label>

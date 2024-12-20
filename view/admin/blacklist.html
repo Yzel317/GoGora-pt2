@@ -239,6 +239,71 @@
                 <button onclick="removeFromBlacklist(5)">Remove</button>
               </td>
             </tr>
+            <tr>
+              <td>jekka_student</td>
+              <td>Did not pay on time</td>
+              <td>Multiple instances of late payment in February</td>
+              <td>
+                <span class="status-badge blacklisted">Blacklisted</span>
+              </td>
+              <td>March 18, 2024 9:00 AM</td>
+              <td>
+                <button onclick="updateStatus(1)">Update Status</button>
+                <button onclick="removeFromBlacklist(1)">Remove</button>
+              </td>
+            </tr>
+            <tr>
+              <td>mark_student</td>
+              <td>Frequent cancellations</td>
+              <td>Cancelled 5 rides in the past week</td>
+              <td>
+                <span class="status-badge blacklisted">Blacklisted</span>
+              </td>
+              <td>March 18, 2024 10:30 AM</td>
+              <td>
+                <button onclick="updateStatus(2)">Update Status</button>
+                <button onclick="removeFromBlacklist(2)">Remove</button>
+              </td>
+            </tr>
+            <tr>
+              <td>jem_student</td>
+              <td>Mass bookings</td>
+              <td>Booking multiple rides simultaneously</td>
+              <td>
+                <span class="status-badge reinstated">Reinstated</span>
+              </td>
+              <td>March 18, 2024 11:45 AM</td>
+              <td>
+                <button onclick="updateStatus(3)">Update Status</button>
+                <button onclick="removeFromBlacklist(3)">Remove</button>
+              </td>
+            </tr>
+            <tr>
+              <td>jane_student</td>
+              <td>Did not pay on time</td>
+              <td>Late payment for three consecutive rides</td>
+              <td>
+                <span class="status-badge blacklisted">Blacklisted</span>
+              </td>
+              <td>March 19, 2024 8:15 AM</td>
+              <td>
+                <button onclick="updateStatus(4)">Update Status</button>
+                <button onclick="removeFromBlacklist(4)">Remove</button>
+              </td>
+            </tr>
+            <tr>
+              <td>john_student</td>
+              <td>Mass bookings</td>
+              <td>Multiple bookings for same time slot</td>
+              <td>
+                <span class="status-badge reinstated">Reinstated</span>
+              </td>
+              <td>March 19, 2024 9:30 AM</td>
+              <td>
+                <button onclick="updateStatus(5)">Update Status</button>
+                <button onclick="removeFromBlacklist(5)">Remove</button>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -248,6 +313,11 @@
   <!-- Add to Blacklist Modal -->
   <div id="addBlacklistModal" class="modal">
     <div class="modal-content">
+      <div class="window-controls">
+        <button class="window-control minimize" onclick="minimizeModal('addBlacklistModal')">─</button>
+        <button class="window-control maximize" onclick="maximizeModal('addBlacklistModal')">□</button>
+        <button class="window-control close-btn" onclick="closeAddBlacklistModal()">×</button>
+      </div>
       <div class="window-controls">
         <button class="window-control minimize" onclick="minimizeModal('addBlacklistModal')">─</button>
         <button class="window-control maximize" onclick="maximizeModal('addBlacklistModal')">□</button>
@@ -281,6 +351,11 @@
         <button class="window-control maximize" onclick="maximizeModal('updateStatusModal')">□</button>
         <button class="window-control close-btn" onclick="closeUpdateStatusModal()">×</button>
       </div>
+      <div class="window-controls">
+        <button class="window-control minimize" onclick="minimizeModal('updateStatusModal')">─</button>
+        <button class="window-control maximize" onclick="maximizeModal('updateStatusModal')">□</button>
+        <button class="window-control close-btn" onclick="closeUpdateStatusModal()">×</button>
+      </div>
       <h2>Update Status</h2>
       <form id="updateStatusForm">
         <input type="hidden" id="updateBlacklistId">
@@ -303,6 +378,128 @@
       </form>
     </div>
   </div>
+
+  <!-- Remove or comment out this script block -->
+  <!--
+  <script>
+    async function fetchBlacklist() {
+      try {
+        const response = await fetch('/api/blacklist');
+        const blacklistData = await response.json();
+        const tableBody = document.querySelector('#blacklistTable tbody');
+        
+        tableBody.innerHTML = '';
+        
+        blacklistData.forEach(entry => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${entry.username}</td>
+            <td>${entry.reason}</td>
+            <td>${entry.notes || '-'}</td>
+            <td>
+              <span class="status-badge ${entry.blacklist_status.toLowerCase()}">
+                ${entry.blacklist_status}
+              </span>
+            </td>
+            <td>${new Date(entry.blacklist_date).toLocaleString()}</td>
+            <td>
+              <button onclick="updateStatus(${entry.blacklist_id})">Update Status</button>
+              <button onclick="removeFromBlacklist(${entry.blacklist_id})">Remove</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error fetching blacklist:', error);
+        alert('Failed to load blacklist data.');
+      }
+    }
+
+    // Call fetchBlacklist when the page loads
+    document.addEventListener('DOMContentLoaded', fetchBlacklist);
+  </script>
+  -->
+
+  <script>
+  // Add status badge styles
+  const styles = `
+    <style>
+      .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.9em;
+        font-weight: 500;
+      }
+      .blacklisted {
+        background-color: #ffebee;
+        color: #c62828;
+      }
+      .reinstated {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
+    </style>
+  `;
+  document.head.insertAdjacentHTML('beforeend', styles);
+  </script>
+
+  <script>
+    function openAddBlacklistModal() {
+      document.getElementById('addBlacklistModal').style.display = 'block';
+    }
+
+    function closeAddBlacklistModal() {
+      document.getElementById('addBlacklistModal').style.display = 'none';
+    }
+
+    function updateStatus(id) {
+      document.getElementById('updateStatusModal').style.display = 'block';
+    }
+
+    function closeUpdateStatusModal() {
+      document.getElementById('updateStatusModal').style.display = 'none';
+    }
+
+    function minimizeModal(modalId) {
+      const modalContent = document.querySelector(`#${modalId} .modal-content`);
+      modalContent.classList.toggle('minimized');
+      if (modalContent.classList.contains('maximized')) {
+        modalContent.classList.remove('maximized');
+      }
+    }
+
+    function maximizeModal(modalId) {
+      const modalContent = document.querySelector(`#${modalId} .modal-content`);
+      modalContent.classList.toggle('maximized');
+      if (modalContent.classList.contains('minimized')) {
+        modalContent.classList.remove('minimized');
+      }
+    }
+
+    function removeFromBlacklist(id) {
+      if (confirm('Are you sure you want to remove this entry?')) {
+        alert('Entry removed successfully');
+      }
+    }
+
+    function applyFilters() {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#blacklistTable tbody tr');
+      
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchInput) ? '' : 'none';
+      });
+    }
+
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterStatus').value = '';
+      document.getElementById('filterReason').value = '';
+      const rows = document.querySelectorAll('#blacklistTable tbody tr');
+      rows.forEach(row => row.style.display = '');
+    }
+  </script>
 
   <!-- Remove or comment out this script block -->
   <!--
