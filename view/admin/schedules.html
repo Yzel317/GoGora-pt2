@@ -37,7 +37,6 @@
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
-            text-align: center;
             font-size: larger;
         }
         th {
@@ -46,9 +45,6 @@
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
-        }
-        tr:hover {
-            background-color: #ddd;
         }
   </style>
 </head>
@@ -90,6 +86,9 @@
           <h3>Add a New Schedule</h3>
           <form id="addScheduleForm">
 
+            <label for="schedRideId">Ride Id:</label>
+            <input type="text" id="schedRideId" placeholder="Ride Id:" required>
+
             <label for="scheduleRoute">Route:</label>
             <input type="text" id="scheduleRoute" placeholder="Route" required>
 
@@ -104,10 +103,21 @@
         </div>
 
         <!-- Schedule List -->
+
       <div id="schedulesTableDiv">
+        <table id = "scheduleTableHeader">
+          <tr>
+            <th>Schedule ID</th>
+            <th>Ride ID</th>
+            <th>Route</th>
+            <th>Departure</th>
+            <th>Seats Available</th>
+          </tr>
+        </table>
         <table id = "schedulesTable">
           <tr>
-            <th>ID</th>
+            <th>Schedule ID</th>
+            <th>Ride ID</th>
             <th>Route</th>
             <th>Departure</th>
             <th>Seats Available</th>
@@ -130,41 +140,49 @@
   </div>
 
   <script>
-
-    async function fetchSchedules() {
+  async function fetchSchedules() {
       const response = await fetch('/api/schedule');
       const schedules = await response.json();
       const schedulesTable = document.getElementById('schedulesTable');
 
       schedulesTable.innerHTML = schedules.map(schedule => `
-        <tr class="schedule-item" data-schedule-id="${schedule.ride_id}">
+        <tr class="schedule-item" data-schedule-id="${schedule.sched_id}">
+          <td>${schedule.sched_id}</td>
           <td>${schedule.ride_id}</td>
           <td>${schedule.route}</td>
           <td>${schedule.departure}</td>
           <td>${schedule.seats_available}</td>
+          <td><button onclick="deleteSchedule(${schedule.sched_id})">Delete</button></td>
         </tr>
       `).join('');
     }
 
 
+
   async function addSchedule(event) {
   event.preventDefault(); // Prevent page reload on form submission
 
+  const rideId = parseInt(document.getElementById('schedRideId').value, 10);
   const route = document.getElementById('scheduleRoute').value;
   const departure = document.getElementById('scheduleDeparture').value;
-  const seatsAvailable = document.getElementById('scheduleSeats').value;
+  const seatsAvailable = parseInt(document.getElementById('scheduleSeats').value, 10);
 
+  console.log(rideId);
   try {
     const response = await fetch('/api/schedule', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ route, departure, seats_available: seatsAvailable }),
+      body: JSON.stringify({ ride_id: rideId, route, departure, seats_available: seatsAvailable }),
     });
+
+    console.log(rideId);
 
     // Check if the response is JSON
     const responseData = await response.json();
+
+    console.log(responseData);
 
     if (response.ok) {
       alert('Schedule added successfully!');
@@ -176,6 +194,29 @@
   } catch (error) {
     console.error('Error adding schedule:', error);
     alert('Failed to add schedule.');
+  }
+}
+
+async function deleteSchedule(sched_id) {
+  if (!confirm('Are you sure you want to delete this schedule?')) return;
+
+  try {
+    const response = await fetch(`/api/schedule/${sched_id}`, {
+      method: 'DELETE',
+    });
+
+    const responseData = await response.json();
+
+    if (response.ok) {
+      alert('Schedule deleted successfully');
+      fetchSchedules(); // Refresh the schedule list
+    } else {
+      console.error('Delete failed:', responseData.error);
+      alert(`Error deleting schedule: ${responseData.error}`);
+    }
+  } catch (error) {
+    console.error('Error deleting schedule:', error);
+    alert('Failed to delete schedule.');
   }
 }
 
@@ -195,26 +236,6 @@ flatpickr('#scheduleDeparture', {
 });
     
 /*
-    async function addSchedule() {
-      const scheduleData = {
-        route: document.getElementById('scheduleRoute').value,
-        time: document.getElementById('scheduleTime').value,
-      };
-
-      const response = await fetch('/api/schedules', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(scheduleData),
-      });
-
-      if (response.ok) {
-        alert('Schedule added!');
-        fetchSchedules();
-      } else {
-        alert('Failed to add schedule');
-      }
-    }
-
     async function editSchedule(id) {
       const response = await fetch(`/api/schedules/${id}`);
       const schedule = await response.json();

@@ -20,18 +20,20 @@ router.get('/', async (req, res) => {
 
 // Route to add a new schedule
 router.post('/', async (req, res) => {
-  const { route, departure, seats_available } = req.body;
+  const { ride_id, route, departure, seats_available } = req.body;
 
   // Validate the incoming data
-  if (!route || !departure || !seats_available) {
+  if (!ride_id || !route || !departure || !seats_available) {
     return res.status(400).json({ error: 'Route, Departure, and Seats Available are required' });
   }
 
   try {
     // Query to insert a new schedule into the database
-    const query = 'INSERT INTO schedule (route, departure, seats_available) VALUES (?, ?, ?)';
-    const [result] = await db.query(query, [route, departure, seats_available]);
+    const query = 'INSERT INTO schedule (ride_id, route, departure, seats_available) VALUES (?, ?, ?, ?)';
+    const [result] = await db.query(query, [ride_id, route, departure, seats_available]);
 
+    console.log(result);
+    
     // Send a success response with the inserted schedule ID
     res.status(201).json({ success: true, insertId: result.insertId });
   } catch (error) {
@@ -40,5 +42,21 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.delete('/:sched_id', async (req, res) => {
+  const { sched_id } = req.params;
+
+  if (!sched_id) {
+    return res.status(400).json({ error: 'sched_id is required' });
+  }
+
+  // Delete the ride from the database
+  try {
+    const result = await db.query('DELETE FROM schedule WHERE sched_id = ?', [sched_id]);
+    res.json({ success: true, message: 'Ride deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete ride' });
+  }
+});
 
 module.exports = router;
