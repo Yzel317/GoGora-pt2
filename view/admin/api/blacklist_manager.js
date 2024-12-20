@@ -11,7 +11,6 @@ function initializeEventListeners() {
     document.getElementById('updateStatusForm')?.addEventListener('submit', updateStatus);
     document.getElementById('searchInput')?.addEventListener('input', filterBlacklist);
     document.getElementById('filterStatus')?.addEventListener('change', filterBlacklist);
-    document.getElementById('filterReason')?.addEventListener('change', filterBlacklist);
 }
 
 async function loadBlacklist() {
@@ -32,7 +31,7 @@ async function loadUsers() {
         userSelect.innerHTML = '<option value="">Select User</option>';
         users.forEach(user => {
             userSelect.innerHTML += `
-                <option value="${user.user_id}">${user.username} (${user.firstname} ${user.lastname})</option>
+                <option value="${user.username}">${user.username} (${user.firstname} ${user.lastname})</option>
             `;
         });
     } catch (error) {
@@ -46,15 +45,15 @@ function renderBlacklist(entries) {
 
     entries.forEach(entry => {
         const row = document.createElement('tr');
+        row.style.height = '60px';
         row.innerHTML = `
-            <td>${entry.username} (${entry.firstname} ${entry.lastname})</td>
-            <td>${getReasonText(entry.reason_id)}</td>
-            <td>${entry.notes || '-'}</td>
-            <td><span class="status-badge ${entry.status}">${entry.status}</span></td>
-            <td>${new Date(entry.created_at).toLocaleDateString()}</td>
-            <td>
+            <td style="width: 20%">${entry.username}</td>
+            <td style="width: 30%">${entry.reason}</td>
+            <td style="width: 15%">${entry.blacklist_status}</td>
+            <td style="width: 15%">${new Date(entry.blacklist_date).toLocaleDateString()}</td>
+            <td style="width: 20%">
                 <button onclick="openUpdateStatusModal(${entry.blacklist_id})" 
-                        class="edit-button">Update Status</button>
+                        class="edit-button" style="margin-right: 10px">Update Status</button>
                 <button onclick="deleteFromBlacklist(${entry.blacklist_id})" 
                         class="delete-button">Remove</button>
             </td>
@@ -63,22 +62,12 @@ function renderBlacklist(entries) {
     });
 }
 
-function getReasonText(reasonId) {
-    const reasons = {
-        '0001': 'Did not pay on time',
-        '0002': 'Frequent cancellations',
-        '0003': 'Mass bookings'
-    };
-    return reasons[reasonId] || 'Unknown reason';
-}
-
 async function addToBlacklist(event) {
     event.preventDefault();
     
     const formData = {
-        user_id: document.getElementById('userId').value,
-        reason_id: document.getElementById('reasonId').value,
-        notes: document.getElementById('notes').value
+        username: document.getElementById('userId').value,
+        reason: document.getElementById('notes').value
     };
 
     try {
@@ -106,8 +95,8 @@ async function updateStatus(event) {
     
     const blacklistId = document.getElementById('updateBlacklistId').value;
     const formData = {
-        status: document.getElementById('updateStatus').value,
-        notes: document.getElementById('updateNotes').value
+        blacklist_status: document.getElementById('updateStatus').value,
+        reason: document.getElementById('updateNotes').value
     };
 
     try {
@@ -155,18 +144,12 @@ async function deleteFromBlacklist(id) {
 function filterBlacklist() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const statusFilter = document.getElementById('filterStatus').value;
-    const reasonFilter = document.getElementById('filterReason').value;
 
     const filtered = blacklistEntries.filter(entry => {
-        const matchesSearch = 
-            entry.username.toLowerCase().includes(searchTerm) ||
-            entry.firstname.toLowerCase().includes(searchTerm) ||
-            entry.lastname.toLowerCase().includes(searchTerm);
-            
-        const matchesStatus = !statusFilter || entry.status === statusFilter;
-        const matchesReason = !reasonFilter || entry.reason_id === reasonFilter;
+        const matchesSearch = entry.username.toLowerCase().includes(searchTerm);
+        const matchesStatus = !statusFilter || entry.blacklist_status === statusFilter;
 
-        return matchesSearch && matchesStatus && matchesReason;
+        return matchesSearch && matchesStatus;
     });
 
     renderBlacklist(filtered);
@@ -187,8 +170,8 @@ function openUpdateStatusModal(id) {
     if (!entry) return;
 
     document.getElementById('updateBlacklistId').value = id;
-    document.getElementById('updateStatus').value = entry.status;
-    document.getElementById('updateNotes').value = entry.notes || '';
+    document.getElementById('updateStatus').value = entry.blacklist_status;
+    document.getElementById('updateNotes').value = entry.reason || '';
     document.getElementById('updateStatusModal').style.display = 'block';
 }
 
@@ -204,6 +187,5 @@ function applyFilters() {
 function clearFilters() {
     document.getElementById('searchInput').value = '';
     document.getElementById('filterStatus').value = '';
-    document.getElementById('filterReason').value = '';
     filterBlacklist();
 }

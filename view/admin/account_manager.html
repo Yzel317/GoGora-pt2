@@ -4,35 +4,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GoGora - Account Manager</title>
+  <title>GoGora - Account Management</title>
   <link rel="stylesheet" href="admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">  
-  <script src="/js/users.js" defer></script>
-  <script src="/js/account_mngr.js" defer></script>
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
+  <script src="/api/account_mngr.js" defer></script>
   <style>
-    /* Account manager specific styles */
-    .user-controls {
-      position: absolute;
-      right: 10px;
-      top: 10px;
+    .search-filters {
       display: flex;
-      gap: 8px;
+      justify-content: flex-start;
+      gap: 30px;
+      margin: 20px 0;
+      align-items: center;
     }
 
-    .user-modal-content.minimized {
-      transform: scale(0.7);
-      width: 70%;
-      margin-top: 80vh;
-      opacity: 0.8;
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .user-modal-content.maximized {
-      width: 95vw;
-      max-width: none;
-      height: 90vh;
-      margin: 5vh auto;
+    .table-wrapper {
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+
+    #userTable th,
+    #userTable td {
+      padding: 15px;
+      text-align: left;
+    }
+
+    .action-bar {
+      margin: 20px 0;
+    }
+
+    .modal-content {
+      padding: 25px;
+    }
+
+    .form-group {
+      margin: 15px 0;
+    }
+
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+
+    /* Style for the table cells to ensure equal width */
+    #userTable td:nth-child(1) { width: 12%; } /* Username */
+    #userTable td:nth-child(2) { width: 12%; } /* First Name */
+    #userTable td:nth-child(3) { width: 12%; } /* Last Name */
+    #userTable td:nth-child(4) { width: 20%; } /* Email */
+    #userTable td:nth-child(5) { width: 12%; } /* Role */
+    #userTable td:nth-child(6) { width: 12%; } /* Password */
+    #userTable td:nth-child(7) { width: 10%; } /* Avatar */
+    #userTable td:nth-child(8) { width: 10%; } /* Actions */
+
+    /* Ensure consistent row height */
+    #userTable tr {
+      height: 60px;
+    }
+
+    /* Style for action buttons */
+    .edit-button, .delete-button {
+      margin-right: 10px;
+    }
+
+    /* Name group styling for the forms */
+    .name-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .name-group > div {
+      flex: 1;
+    }
+
+    /* Modal form styling */
+    .modal input,
+    .modal select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
     }
   </style>
 </head>
@@ -56,38 +115,33 @@
       <div class="title-section">
         <h1>Manage Accounts</h1>
       </div>
+      
+      <!-- Search and Filter Section -->
       <div class="search-filters">
         <div class="filter-group">
           <label for="searchInput">Search:</label>
           <input type="text" id="searchInput" placeholder="Search Name" oninput="filterUsers()">
         </div>
-        
         <div class="filter-group">
           <label for="filterRole">Role:</label>
-          <select id="filterRole">
+          <select id="filterRole" onchange="filterUsers()">
             <option value="">All Roles</option>
+            <option value="Admin">Admin</option>
+            <option value="Manager">Manager</option>
+            <option value="Student">Student</option>
+            <option value="Faculty">Faculty</option>
+            <option value="Employee">Employee</option>
           </select>
-        </div>
-        
-        <div class="filter-group">
-          <label for="filterUserType">User Type:</label>
-          <select id="filterUserType">
-            <option value="">All Types</option>
-            <option value="regular">Regular</option>
-            <option value="priority">Priority</option>
-          </select>
-        </div>
-        
-        <div class="filter-buttons">
-          <button onclick="applyFilters()">Apply</button>
-          <button onclick="clearFilters()">Clear All</button>
         </div>
       </div>
+
+      <!-- Add User Button -->
+      <div class="action-bar">
+        <button class="add-button" onclick="openAddUserModal()">+ Add User</button>
+      </div>
+
+      <!-- Users Table -->
       <div class="table-wrapper rides-section">
-        <div class="title-section">
-          <h2>User Accounts</h2>
-          <button class="add-schedule" onclick="openAddUserModal()">+ Add User</button>
-        </div>
         <table id="userTable">
           <thead>
             <tr>
@@ -102,7 +156,7 @@
             </tr>
           </thead>
           <tbody id="userTableBody">
-            <!-- Dynamically populated rows -->
+            <!-- Dynamically populated -->
           </tbody>
         </table>
       </div>
@@ -110,32 +164,52 @@
   </div>
 
   <!-- Add User Modal -->
-  <div id="addUserModal" class="modal" style=
-  "display: none;">
+  <div id="addUserModal" class="modal">
     <div class="modal-content">
       <h2>Add User</h2>
       <form id="addUserForm" onsubmit="addUser(event)">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" name="firstName" required>
-        <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" name="lastName" required>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <label for="confirmPassword">Confirm Password:</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" required>
-        <div class="button-group">
-        <label for="role">Role:</label>
-        <select id="role" name="role" required>
-          <option value="Admin">Admin</option>
-          <option value="Manager">Manager</option>
-          <option value="Student">Student</option>
-          <option value="Faculty">Faculty</option>
-          <option value="Employee">Employee</option>
-        </select>
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div class="name-group">
+          <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password:</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+
+        <div class="form-group">
+          <label for="role">Role:</label>
+          <select id="role" name="role" required>
+            <option value="Admin">Admin</option>
+            <option value="Manager">Manager</option>
+            <option value="Student">Student</option>
+            <option value="Faculty">Faculty</option>
+            <option value="Employee">Employee</option>
+          </select>
+        </div>
+
         <div class="button-group">
           <button type="submit" id="addUserButton">Add User</button>
           <button type="button" id="closeModalButton" onclick="closeAddUserModal()">Cancel</button>
@@ -145,27 +219,44 @@
   </div>
 
   <!-- Update User Modal -->
-  <div id="updateUserModal" class="modal" style="display: none;">
+  <div id="updateUserModal" class="modal">
     <div class="modal-content">
       <h2>Update User</h2>
       <form id="updateUserForm" onsubmit="updateUser(event)">
         <input type="hidden" id="updateUserId">
-        <label for="updateUsername">Username:</label>
-        <input type="text" id="updateUsername" name="username" required>
-        <label for="updateFirstName">First Name:</label>
-        <input type="text" id="updateFirstName" name="firstName" required>
-        <label for="updateLastName">Last Name:</label>
-        <input type="text" id="updateLastName" name="lastName" required>
-        <label for="updateEmail">Email:</label>
-        <input type="email" id="updateEmail" name="email" required>
-        <label for="updateRole">Role:</label>
-        <select id="updateRole" name="role" required>
-          <option value="Admin">Admin</option>
-          <option value="Manager">Manager</option>
-          <option value="Student">Student</option>
-          <option value="Faculty">Faculty</option>
-          <option value="Employee">Employee</option>
-        </select>
+        
+        <div class="form-group">
+          <label for="updateUsername">Username:</label>
+          <input type="text" id="updateUsername" name="username" required>
+        </div>
+
+        <div class="name-group">
+          <div class="form-group">
+            <label for="updateFirstName">First Name:</label>
+            <input type="text" id="updateFirstName" name="firstName" required>
+          </div>
+          <div class="form-group">
+            <label for="updateLastName">Last Name:</label>
+            <input type="text" id="updateLastName" name="lastName" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="updateEmail">Email:</label>
+          <input type="email" id="updateEmail" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="updateRole">Role:</label>
+          <select id="updateRole" name="role" required>
+            <option value="Admin">Admin</option>
+            <option value="Manager">Manager</option>
+            <option value="Student">Student</option>
+            <option value="Faculty">Faculty</option>
+            <option value="Employee">Employee</option>
+          </select>
+        </div>
+
         <div class="button-group">
           <button type="submit" id="updateUserButton">Update User</button>
           <button type="button" id="closeUpdateModalButton" onclick="closeUpdateUserModal()">Cancel</button>
@@ -173,22 +264,5 @@
       </form>
     </div>
   </div>
-  <script>
-    // Filter users based on search input
-    function filterUsers() {
-      const searchInput = document.getElementById('searchInput').value.toLowerCase();
-      const filterRole = document.getElementById('filterRole').value;
-      const filteredUsers = users.filter(user => {
-        return (
-          (!filterRole || user.role === filterRole) &&
-          (user.username.toLowerCase().includes(searchInput) ||
-          user.firstname.toLowerCase().includes(searchInput) ||
-          user.lastname.toLowerCase().includes(searchInput))
-        );
-      });
-      loadUsers(filteredUsers);
-    }
-
-  </script>
 </body>
 </html>
