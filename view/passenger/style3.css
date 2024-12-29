@@ -1,0 +1,296 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
+    color: #444;
+}
+
+/* Main Container */
+.container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+    min-height: 700px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    flex-direction: column;
+}
+
+/* Header Section */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    color: #3A3D98;
+}
+
+.header p {
+    font-size: 1.2rem;
+    color: #444;
+    margin-top: 10px;
+}
+
+/* Ride Cards Section */
+.ride-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Ride Cards */
+.ride-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ride-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.ride-card h3 {
+    font-size: 1.5rem;
+    color: #0071CE;
+    margin-bottom: 10px;
+}
+
+.ride-card p {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+/* Book Button */
+.book-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #0071CE;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.book-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Details Section */
+.details-cont {
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+.details-cont h1 {
+    font-size: 1.8rem;
+    color: #0071CE;
+    margin-bottom: 15px;
+}
+
+.ride-details {
+    background-color: #d1e4fd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.detail-item .label {
+    color: #103166;
+    font-weight: bold;
+}
+
+.detail-item .value {
+    color: #333;
+}
+
+/* Confirmation Section */
+#confirm-bod {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #F2F7FF;
+    height: 100vh;
+    padding: 30px;
+}
+
+.confirm-cont h1 {
+    font-size: 2rem;
+    color: #0071CE;
+    margin-bottom: 20px;
+}
+
+.confirm-cont p {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.confirm-cont img {
+    max-width: 100px;
+    height: auto;
+    margin: 20px 0;
+}
+
+/* Buttons */
+.confirm-btn,
+.cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.confirm-btn {
+    background-color: #0071CE;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background-color: #0056b3;
+}
+
+.cancel-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Payment Method Section */
+.payment-method-container {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.payment-method-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #0071CE;
+    margin-bottom: 10px;
+}
+
+.payment-method-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    color: #333;
+    background: rgba(255, 255, 255, 0.8);
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.payment-method-select:focus {
+    border-color: #0071CE;
+}
+
+/* Return to Home Button Styling */
+button {
+    display: inline-block;
+    padding: 12px 25px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #ffffff;
+    background-color: #0071CE; /* Primary Blue */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker Blue for Hover */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: translateY(0); /* Restore position on click */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Center Button in the Container */
+.confirm-cont button {
+    margin: 20px auto;
+    display: block;
+    width: 200px;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .payment-method-container {
+        padding: 15px;
+    }
+
+    .confirm-btn,
+    .cancel-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .ride-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .details-cont {
+        width: 90%;
+    }
+}

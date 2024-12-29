@@ -1,4 +1,3 @@
-
 <?php
 require_once('../../control/includes/db.php');
 header('Content-Type: application/json');
@@ -18,23 +17,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $isAjax) {
     $ride_type = $_POST['ride_type'];
     $time = $_POST['time'];
 
-    // Base query
-    $query = "SELECT * FROM rides WHERE 1";
+    // Base query to exclude rides with seats_available <= 0
+    $query = "SELECT route, TIME_FORMAT(time, '%h:%i %p') as formatted_time, seats_available, ride_type, ride_id 
+              FROM rides WHERE seats_available > 0";
     $params = [];
     $types = '';
 
     // Route filter
     if (!empty($route)) {
-        if (stripos($route, 'bakakeng') !== false && stripos($route, 'igorot') === false) {
-            $query .= " AND LOWER(route) LIKE LOWER(?)";
-            $params[] = '%bakakeng to igorot park%';
-        } elseif (stripos($route, 'igorot') !== false && stripos($route, 'bakakeng') === false) {
-            $query .= " AND LOWER(route) LIKE LOWER(?)";
-            $params[] = '%igorot park to bakakeng%';
-        } else {
-            $query .= " AND LOWER(route) LIKE LOWER(?)";
-            $params[] = '%' . $route . '%';
-        }
+        $query .= " AND LOWER(route) LIKE LOWER(?)";
+        $params[] = '%' . $route . '%';
         $types .= 's';
     }
 
@@ -48,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $isAjax) {
     // Time filter
     if ($time !== 'All') {
         $start_time = date('H:i:s', strtotime($time));
-        $end_time = date('H:i:s', strtotime('+59 minutes 59 seconds', strtotime($start_time)));
+        $end_time = date('H:i:s', strtotime('+59 minutes', strtotime($time)));
         $query .= " AND TIME(time) BETWEEN ? AND ?";
         $params[] = $start_time;
         $params[] = $end_time;
@@ -72,3 +64,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $isAjax) {
 
 echo json_encode($rides);
 $conn->close();
+?>
