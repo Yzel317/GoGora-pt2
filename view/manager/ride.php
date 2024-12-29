@@ -1,6 +1,7 @@
 <?php
 /* Authors: Jemma Niduaza, Mark Jervin Galarce */
-require_once $_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php';
+include('../../control/includes/db.php');
+
 
    // Fetch rides from the database
    $sql = "SELECT plate_number, ride_type, route, CONCAT(DATE_FORMAT(time, '%h:%i %p'), ' to ', DATE_FORMAT(departure, '%h:%i %p')) as schedule, seats_available FROM rides";
@@ -30,9 +31,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php';
                 <li><a href="../manager/priority.php"><span class="icon">⭐</span> Priority Lane Management</a></li>
                 <li><a href="../manager/reservations.php"><span class="icon">📝</span> Reservations</a></li>
             </ul>
-            <div class="logout">
-                <a href="/view/manager/manage.php"><span class="icon">🚪</span> Logout</a>
-            </div>
+         
         </nav>
         <main class="content">
             <header>

@@ -1,5 +1,6 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php'); // Include database connection
+include('../../control/includes/db.php');
+// Include database connection
 
 // Fetch all priority users
 $priorityUsersQuery = "SELECT firstname, lastname, username, role, user_type FROM users WHERE user_type = 'Priority'";
@@ -33,9 +34,7 @@ $ridesResult = mysqli_query($conn, $ridesQuery);
                 <li><a href="../manager/priority.php"><span class="icon">⭐</span> Priority Lane Management</a></li>
                 <li><a href="../manager/reservations.php"><span class="icon">📝</span> Reservations</a></li>
             </ul>
-            <div class="logout">
-                <a href="#"><span class="icon">🚪</span> Logout</a>
-            </div>
+        
         </nav>
         <main class="content">
             <header>

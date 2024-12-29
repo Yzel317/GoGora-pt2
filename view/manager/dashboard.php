@@ -1,6 +1,7 @@
 <?php
 /* Authors: Jemma Niduaza, Mark Jervin Galarce */
-require_once $_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php';
+include('../../control/includes/db.php');
+
 
 // Get total registered users
 $usersQuery = "SELECT COUNT(*) as total_users FROM users WHERE role != 'Admin' AND role != 'Manager'";
@@ -129,16 +130,17 @@ $recentBookings = $conn->query($recentBookingsQuery);
             <div class="logo">
                 <h1>GoGora</h1>
             </div>
-            <div class="nav-title">Manager</div>
+            <div class="nav-title">MANAGER</div>
             <ul>
                 <li><a href="../manager/dashboard.php"><span class="icon">📊</span> Dashboard</a></li>
                 <li><a href="../manager/ride.php"><span class="icon">🚗</span> Ride Management</a></li>
                 <li><a href="../manager/route.php"><span class="icon">🛣️</span> Route Management</a></li>
                 <li><a href="../manager/account.php"><span class="icon">👤</span> Account Management</a></li>
+                <li><a href="../manager/priority.php"><span class="icon">⭐</span> Priority Lane Management</a></li>
                 <li><a href="../manager/reservations.php"><span class="icon">📝</span> Reservations</a></li>
             </ul>
             <div class="logout">
-                <a href="/view/manager/manage.php"><span class="icon">🚪</span> Logout</a>
+                <a href="/GoGora-pt2/view/manager/manage.php"><span class="icon">🚪</span> Logout</a>
             </div>
         </div>
         <div class="content">

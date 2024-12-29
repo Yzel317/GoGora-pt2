@@ -3,7 +3,8 @@
 <?php
 session_start(); // Start session at the top
 
-include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');
+include('../../control/includes/db.php');
+
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -18,8 +19,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate inputs
     if (empty($username) || empty($password)) {
         $error = "Username and password are required.";
-    } elseif (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username)) {
-        $error = "Invalid username format.";
     } else {
         // Query to check if username exists
         $sql = "SELECT * FROM users WHERE username = ?";
@@ -40,9 +39,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Redirect based on role
                 if (in_array($user['role'], ['Student', 'Faculty', 'Employee'])) {
-                    header("Location: /view/passenger/booking.php");
+                    header("Location: /GoGora-pt2/view/passenger/booking.php");
                 } elseif ($user['role'] === 'Manager') {
-                    header("Location: /view/manager/dashboard.php");
+                    header("Location: /GoGora-pt2/view/manager/dashboard.php");
                 }
                 exit();
             } else {
@@ -64,14 +63,14 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoGora</title>
-    <link rel="icon" type="image/png" href="/view/assets/favicon.png">
+    <link rel="icon" type="image/png" href="/GoGora-pt2/view/assets/favicon.png">
     <link rel="stylesheet" href="manager.css">
   </head>
   <body>
     <div class="container">
       <div class="left-section">
         <div class="promo-content">
-          <img src="/view/assets/logo.png" alt="GoGora Logo" class="promo-logo">
+          <img src="/GoGora-pt2/view/assets/logo.png" alt="GoGora Logo" class="promo-logo">
           <h1 class="promo-title">GoGora</h1>
           <p class="promo-subtitle">Your journey, our pride!</p>
         </div>
@@ -95,7 +94,7 @@ $conn->close();
           <?php } ?>
           
           <button type="submit" class="register-btn">Login</button>
-          <p class="login-text">Don't have an account? <a href="/view/passenger/index.php">Sign Up</a></p>
+          <p class="login-text">Don't have an account? <a href="/GoGora-pt2/view/passenger/index.php">Sign Up</a></p>
         </form>
 </body>
 </html>

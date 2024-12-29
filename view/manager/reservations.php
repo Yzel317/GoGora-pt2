@@ -1,6 +1,7 @@
 <?php
 /* Authors: Jemma Niduaza, Mark Jervin Galarce */
-require_once $_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php';
+include('../../control/includes/db.php');
+
 
 // Fetch reservations with user and ride details
 $query = "SELECT r.reservation_id, r.status, r.payment_status, 

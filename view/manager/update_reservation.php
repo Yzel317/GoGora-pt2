@@ -1,6 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');
-
+include('../../control/includes/db.php');
 if (isset($_GET['reservation_id'])) {
     $reservation_id = $_GET['reservation_id'];
 

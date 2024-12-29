@@ -1,5 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');  // Include database connection
+include('../../control/includes/db.php');// Include database connection
 
 // Handle form submission and add user logic
 $successMessage = '';
@@ -71,9 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <li><a href="../manager/priority.php"><span class="icon">⭐</span> Priority Lane Management</a></li>
                 <li><a href="../manager/reservations.php"><span class="icon">📝</span> Reservations</a></li>
             </ul>
-            <div class="logout">
-                <a href="#"><span class="icon">🚪</span> Logout</a>
-            </div>
+            
         </nav>
         <!-- MAIN CONTENT -->
         <div class="main-content">

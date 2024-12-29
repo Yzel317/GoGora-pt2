@@ -1,5 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/control/includes/db.php');  // Include database connection
+include('../../control/includes/db.php'); // Include database connection
 
 // Enable error reporting for debugging
 ini_set('display_errors', 1);
@@ -80,9 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <li><a href="../manager/priority.php"><span class="icon">⭐</span> Priority Lane Management</a></li>
                 <li><a href="../manager/reservations.php"><span class="icon">📝</span> Reservations</a></li>
             </ul>
-            <div class="logout">
-                <a href="#"><span class="icon">🚪</span> Logout</a>
-            </div>
+          
         </nav>
         <div class="main-content">
             <form class="update-form" method="POST">
